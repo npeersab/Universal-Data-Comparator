@@ -6,27 +6,18 @@ Created on Mar 11, 2019
 
 class Connection(object):
     '''
-    classdocs
+    Connection to the database
     '''
 
 
     def __init__(self, connection_name, database, host, dbname, port):
         '''
-        Constructor
+        constructor to create new Connection
         '''
         
         self.name = connection_name
         self.database = database
         self.host = host
         self.dbname = dbname,
-        self.port = port
-    
-    def set_username(self, username):
-        
-        self.username = username
-        
-    def set_password(self, password):
-        self.password = password
-        
-        
+        self.port = port    
     
