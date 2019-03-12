@@ -14,7 +14,6 @@ class TestProject(object):
         '''
         Create new Test Project with name
         '''
-        
         self.name = project_name
         self.connections = []
         self.test_cases = []
@@ -23,14 +22,10 @@ class TestProject(object):
         '''
         Add new Connection to the Test Project
         '''
-        
         self.connections.append(connection)
         
     def add_test_case(self, test_case):
         '''
         Add new Test Case in the Test Project
-        '''
-        
+        '''        
         self.test_cases.append(test_case)
-        
-    
