@@ -35,7 +35,7 @@ class Connection(object):
         self.connection = None
         self.cursor = None
 
-    def connect(self, user_details: UserDetails):
+    def connect(self, user_details) -> None:
         """
         Create connection with database
         """
@@ -47,6 +47,26 @@ class Connection(object):
     def execute_query(self, query: str):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
+
+    def get_result_generator(self, *, sort=False):
+        """
+        Create a generator to fetch rows from database
+        if data is sorted program will require more memory space to execute
+        """
+
+        if sort:
+            rows = sorted(self.cursor.fetchall())
+
+            def result_generator():
+                for row in rows:
+                    yield row
+
+        else:
+            def result_generator():
+                for row in self.cursor:
+                    yield row
+
+        return result_generator()
 
 
 class UserDetails(object):
