@@ -14,13 +14,27 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from main.Connection import Connection
-from main.UserDetails import UserDetails
+class TestProject(object):
+    """
+    Contains all details about Test Project
+    """
 
-if __name__ == '__main__':
-    user = UserDetails(username='postgres', password='123')
-    connection = Connection(
-        connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
-    connection.connect(user)
-    connection.execute_query('select * from test2')
-    pass
+    def __init__(self, project_name):
+        """
+        Create new Test Project with name
+        """
+        self.name = project_name
+        self.connections = []
+        self.test_cases = []
+        
+    def add_connection(self, connection):
+        """
+        Add new Connection to the Test Project
+        """
+        self.connections.append(connection)
+        
+    def add_test_case(self, test_case):
+        """
+        Add new Test Case in the Test Project
+        """
+        self.test_cases.append(test_case)
