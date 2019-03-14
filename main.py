@@ -15,11 +15,29 @@
 
 
 from connection import Connection, UserDetails
+import comparator
+import time
 
-if __name__ == '__main__':
+
+def main():
     user = UserDetails(username='postgres', password='123')
     connection = Connection(
         connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
     connection.execute_query('select * from test2')
+    source = connection.get_result_generator()
+
+    connection2 = Connection(
+        connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
+    connection2.connect(user)
+    connection2.execute_query('select * from test2')
+    target = connection2.get_result_generator()
+    start = time.perf_counter()
+    source_mis, target_mis = comparator.compare(source, target, max_mismatch_size=10000)
+    print('total time {} sec'.format(time.perf_counter() - start))
+    pass
+
+
+if __name__ == '__main__':
+    main()
     pass
