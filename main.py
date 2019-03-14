@@ -14,8 +14,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from connection import Connection
-from userdetails import UserDetails
+from connection import Connection, UserDetails
 
 if __name__ == '__main__':
     user = UserDetails(username='postgres', password='123')
