@@ -20,12 +20,12 @@ import time
 
 
 def main():
-    user = UserDetails(username='postgres', password='su123')
+    user = UserDetails(username='postgres', password='123')
     connection = Connection(
         connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
     start = time.perf_counter()
-    connection.execute_query('select * from test1 order by pk')
+    connection.execute_query('select * from test1')
     print('source time {} sec'.format(time.perf_counter() - start))
     source = connection.get_result_generator()
 
@@ -33,18 +33,18 @@ def main():
         connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
     connection2.connect(user)
     start = time.perf_counter()
-    connection2.execute_query('select * from test2 order by pk')
+    connection2.execute_query('select * from test2')
     target = connection2.get_result_generator()
     print('target time {} sec'.format(time.perf_counter() - start))
     
     start = time.perf_counter()
-    source_mis, target_mis = comparator.compare(source, target, max_mismatch_size=200000)
+    source_mis, target_mis = comparator.compare(source, target, max_mismatch_size=100000)
     print('compare time {} sec'.format(time.perf_counter() - start))
-    
-    print('source mismatch length: {}'.format(source_mis.len))
-    print('target mismatch length: {}'.format(target_mis.len))
-    
+
+    print('source mismatch length: {}'.format(len(source_mis)))
+    print('target mismatch length: {}'.format(len(target_mis)))
     pass
+
 
 if __name__ == '__main__':
     main()

@@ -14,40 +14,35 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from bst import Tree
+from sortedlist import SortedList
 
 
 def compare(source_records, target_records, *, max_mismatch_size, sort_source=False, sort_target=False):
-    source_mismatch_records = Tree()
-    target_mismatch_records = Tree()
+    source_mismatch_records = SortedList()
+    target_mismatch_records = SortedList()
     fetch_source = fetch_target = True
 
     while True:
         try:
             if fetch_target:
-                target_record = getTupple(target_records.__next__())
+                target_record = get_tuple(target_records.__next__())
             if fetch_source:
-                source_record = getTupple(source_records.__next__())
+                source_record = get_tuple(source_records.__next__())
         except StopIteration:
             break
-        
-        #print('source_record', source_record)
-        #print('target_record', target_record)
         
         if source_record == target_record:
             fetch_source = fetch_target = True
             pass
         
         else:
-            if target_mismatch_records.delete(source_record):
-                
+            if target_mismatch_records.remove(source_record):
                 fetch_target = False
                 source_found = True
             else:
                 source_found = False
-                
-            if source_mismatch_records.delete(target_record):
-                
+
+            if source_mismatch_records.remove(target_record):
                 fetch_source = False
                 target_found = True
             else:
@@ -57,22 +52,21 @@ def compare(source_records, target_records, *, max_mismatch_size, sort_source=Fa
                 source_mismatch_records.insert(source_record)
                 target_mismatch_records.insert(target_record)
 
-                if source_mismatch_records.len >= max_mismatch_size or target_mismatch_records.len >= max_mismatch_size:
+                if len(source_mismatch_records) >= max_mismatch_size or \
+                        len(target_mismatch_records) >= max_mismatch_size:
                     return source_mismatch_records, target_mismatch_records
-
-    #source_mismatch_records.extend(source_records)
-    #target_mismatch_records.extend(target_records)
 
     return source_mismatch_records, target_mismatch_records
 
-def getTupple(row):
+
+def get_tuple(row):
     L = list(row)
     del row
-    while True:
-        try:
+    try:
+        while True:
             index = L.index(None)
             L.pop(index)
             L.insert(index, '__NULL__')
-        except:
-            break;
+    except ValueError:
+        pass
     return tuple(L)
