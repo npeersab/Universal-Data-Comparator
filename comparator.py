@@ -14,47 +14,65 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+from bst import Tree
+
+
 def compare(source_records, target_records, *, max_mismatch_size, sort_source=False, sort_target=False):
-    source_mismatch_records = []
-    target_mismatch_records = []
+    source_mismatch_records = Tree()
+    target_mismatch_records = Tree()
     fetch_source = fetch_target = True
 
     while True:
         try:
             if fetch_target:
-                target_record = target_records.__next__()
+                target_record = getTupple(target_records.__next__())
             if fetch_source:
-                source_record = source_records.__next__()
+                source_record = getTupple(source_records.__next__())
         except StopIteration:
             break
-
+        
+        #print('source_record', source_record)
+        #print('target_record', target_record)
+        
         if source_record == target_record:
             fetch_source = fetch_target = True
             pass
-
+        
         else:
-            if source_record in target_mismatch_records:
-                target_mismatch_records.remove(source_record)
+            if target_mismatch_records.delete(source_record):
+                
                 fetch_target = False
                 source_found = True
             else:
                 source_found = False
-
-            if target_record in source_mismatch_records:
-                source_mismatch_records.remove(target_record)
+                
+            if source_mismatch_records.delete(target_record):
+                
                 fetch_source = False
                 target_found = True
             else:
                 target_found = False
 
             if not source_found and not target_found:
-                source_mismatch_records.append(source_record)
-                target_mismatch_records.append(target_record)
+                source_mismatch_records.insert(source_record)
+                target_mismatch_records.insert(target_record)
 
-                if len(source_mismatch_records) > max_mismatch_size or len(target_mismatch_records) > max_mismatch_size:
+                if source_mismatch_records.len >= max_mismatch_size or target_mismatch_records.len >= max_mismatch_size:
                     return source_mismatch_records, target_mismatch_records
 
-    source_mismatch_records.extend(source_records)
-    target_mismatch_records.extend(target_records)
+    #source_mismatch_records.extend(source_records)
+    #target_mismatch_records.extend(target_records)
 
     return source_mismatch_records, target_mismatch_records
+
+def getTupple(row):
+    L = list(row)
+    del row
+    while True:
+        try:
+            index = L.index(None)
+            L.pop(index)
+            L.insert(index, '__NULL__')
+        except:
+            break;
+    return tuple(L)
