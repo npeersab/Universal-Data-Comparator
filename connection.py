@@ -13,7 +13,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 import psycopg2
 
 
@@ -48,14 +47,14 @@ class Connection(object):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
-    def get_result_generator(self, *, sort=False):
+    def get_result_generator(self, sort=False):
         """
         Create a generator to fetch rows from database
         if data is sorted program will require more memory space to execute
         """
-
+        cursor = self.cursor
         if sort:
-            rows = sorted(self.cursor.fetchall())
+            rows = sorted(cursor.fetchall())
 
             def result_generator():
                 for row in rows:
@@ -63,7 +62,7 @@ class Connection(object):
 
         else:
             def result_generator():
-                for row in self.cursor:
+                for row in cursor:
                     yield row
 
         return result_generator()
