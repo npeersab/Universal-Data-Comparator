@@ -13,10 +13,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 from connection import Connection, UserDetails
-import comparator
-import time
+from testcase import TestCase
 
 
 def main():
@@ -24,6 +22,18 @@ def main():
     connection = Connection(
         connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
+
+    source_query = 'select * from test1'
+    target_query = 'select * from test2'
+    test_case = TestCase(test_case_name='Test Case 1', source_connection=connection, source_query=source_query,
+                         target_connection=connection, target_query=target_query, max_mismatch_size=100000)
+
+    test_result = test_case.execute()
+    print('source mismatch length: {}'.format(len(test_result.source_mismatch)))
+    print('target mismatch length: {}'.format(len(test_result.target_mismatch)))
+
+    '''
+
     start = time.perf_counter()
     connection.execute_query('select * from test1')
     print('source time {} sec'.format(time.perf_counter() - start))
@@ -38,12 +48,12 @@ def main():
     print('target time {} sec'.format(time.perf_counter() - start))
     
     start = time.perf_counter()
-    source_mis, target_mis = comparator.compare(source, target, max_mismatch_size=100000)
+    source_mis, target_mis = comparator.compare(source, target, max_mismatch_size=10000)
     print('compare time {} sec'.format(time.perf_counter() - start))
 
     print('source mismatch length: {}'.format(len(source_mis)))
     print('target mismatch length: {}'.format(len(target_mis)))
-    pass
+    pass'''
 
 
 if __name__ == '__main__':
