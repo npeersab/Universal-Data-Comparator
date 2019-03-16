@@ -23,8 +23,8 @@ def main():
         connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
 
-    source_query = 'select * from test1'
-    target_query = 'select * from test2'
+    source_query = 'select * from test2'
+    target_query = 'select * from test1'
     test_case = TestCase(test_case_name='Test Case 1', source_connection=connection, source_query=source_query,
                          target_connection=connection, target_query=target_query, max_mismatch_size=100000)
 
