@@ -16,8 +16,7 @@
 from sortedlist import SortedList
 
 
-def compare(source_records, target_records, *, max_mismatch_size, on_source_match=lambda x: x,
-            on_target_match=lambda x: x):
+def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
     source_mismatch_records = SortedList()
     target_mismatch_records = SortedList()
     fetch_source = fetch_target = True
@@ -27,7 +26,7 @@ def compare(source_records, target_records, *, max_mismatch_size, on_source_matc
     while True:
         try:
             if fetch_target:
-                target_record = get_tuple(target_records.__next__())
+                target_record = target_records.__next__()
                 target_found = False
         except StopIteration:
             if not source_found:
@@ -38,7 +37,7 @@ def compare(source_records, target_records, *, max_mismatch_size, on_source_matc
 
         try:
             if fetch_source:
-                source_record = get_tuple(source_records.__next__())
+                source_record = source_records.__next__()
                 source_found = False
         except StopIteration:
             if not target_found:
@@ -48,22 +47,16 @@ def compare(source_records, target_records, *, max_mismatch_size, on_source_matc
             break
         
         if source_record == target_record:
-            on_source_match(source_record)
-            on_target_match(target_record)
             fetch_source = fetch_target = True
         
         else:
             if target_mismatch_records.remove(source_record):
-                on_source_match(source_record)
-                on_target_match(source_record)
                 fetch_target = False
                 source_found = True
             else:
                 source_found = False
 
             if source_mismatch_records.remove(target_record):
-                on_source_match(target_record)
-                on_target_match(source_record)
                 fetch_source = False
                 target_found = True
             else:
@@ -82,26 +75,15 @@ def compare(source_records, target_records, *, max_mismatch_size, on_source_matc
 
 def check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records):
     for source_record in source_records:
+        source_record = source_record
         if target_mismatch_records.remove(source_record):
             pass
         else:
             source_mismatch_records.insert(source_record)
 
     for target_record in target_records:
+        target_record = target_record
         if source_mismatch_records.remove(target_record):
             pass
         else:
             target_mismatch_records.insert(target_record)
-
-
-def get_tuple(row):
-    row = list(row)
-    try:
-        while True:
-            index = row.index(None)
-            row.pop(index)
-            row.insert(index, '__NULL__')
-    except ValueError:
-        pass
-
-    return tuple(row)
