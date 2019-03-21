@@ -14,13 +14,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from connection import Connection, UserDetails
-from testcase import TestCase
+from testproject import TestCase
 
 
 def main():
     user = UserDetails(username='postgres', password='123')
     connection = Connection(
-        connection_name='Test', database='postgres', host='localhost', db_name='postgres', port='5432')
+        name='Test', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
 
     source_query = 'select * from test2'
