@@ -21,16 +21,15 @@ class Connection(object):
     Connection to the database
     """
 
-    def __init__(self, *, connection_name: str, database: str, host: str, db_name: str, port: str) -> None:
+    def __init__(self, *, name: str, host: str, port: str, db_name: str) -> None:
         """
         constructor to create new Connection
         """
-        
-        self.name = connection_name
-        self.database = database
+
+        self.name = name
         self.host = host
-        self.db_name = db_name
         self.port = port
+        self.db_name = db_name
         self.connection = None
         self.cursor = None
 
@@ -43,11 +42,10 @@ class Connection(object):
             self.db_name, self.host, self.port, user_details.username, user_details.password)
         self.connection = psycopg2.connect(url)
 
-    def execute_query(self, query: str):
+    def execute_query(self, query: str, sort):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
-    def get_result_generator(self, sort=False):
         """
         Create a generator to fetch rows from database
         if data is sorted program will require more memory space to execute
@@ -92,7 +90,7 @@ class UserDetails(object):
     Store Username and password
     """
 
-    def __init__(self, *, password: str, username: str) -> str:
+    def __init__(self, *, password: str, username: str):
         """
         Create new user details
         :param username: str
