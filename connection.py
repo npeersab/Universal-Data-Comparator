@@ -50,11 +50,11 @@ class Connection(object):
         Create a generator to fetch rows from database
         if data is sorted program will require more memory space to execute
         """
-        rows = self.cursor
+        data = self.cursor
         if sort:
-            rows = sorted(rows.fetchall())
+            data = sorted(data.fetchall())
 
-        return (replace_null(row) for row in rows)
+        return (replace_null(row) for row in data)
 
 
 def replace_null(row: tuple) -> tuple:
