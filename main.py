@@ -16,7 +16,7 @@
 import sys
 
 from PyQt5 import QtWidgets
-from home_ui import MainWindow
+from window import MainWindow
 
 
 def main():
