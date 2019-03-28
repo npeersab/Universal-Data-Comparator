@@ -13,12 +13,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from connection import Connection, UserDetails
-from testproject import TestCase
+import sys
+
+from PyQt5 import QtWidgets
+from home_ui import MainWindow
 
 
 def main():
-    user = UserDetails(username='postgres', password='123')
+
+    '''user = UserDetails(username='postgres', password='123')
     connection = Connection(
         name='Test', host='localhost', db_name='postgres', port='5432')
     connection.connect(user)
@@ -32,6 +35,7 @@ def main():
     print('source mismatch length: {}'.format(len(test_result.source_mismatch)))
     print('target mismatch length: {}'.format(len(test_result.target_mismatch)))
 
+    '''
     '''
 
     start = time.perf_counter()
@@ -57,5 +61,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    pass
+    app = QtWidgets.QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    sys.exit(app.exec_())
