@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>_self_</class>
+ <widget class="QMainWindow" name="_self_">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>755</width>
-    <height>526</height>
+    <height>544</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="central_widget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
+     <widget class="QTreeWidget" name="test_project_tree">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -25,7 +25,7 @@
       </property>
       <column>
        <property name="text">
-        <string notr="true">1</string>
+        <string notr="true">Test Projects</string>
        </property>
       </column>
      </widget>
@@ -52,7 +52,14 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTableWidget" name="tableWidget">
+        <widget class="QLabel" name="test_results_label">
+         <property name="text">
+          <string>Test Results</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="result_table">
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
@@ -88,17 +95,17 @@
          </attribute>
          <row>
           <property name="text">
-           <string>www</string>
+           <string>1</string>
           </property>
          </row>
          <row>
           <property name="text">
-           <string>New Row</string>
+           <string>2</string>
           </property>
          </row>
          <row>
           <property name="text">
-           <string>w</string>
+           <string>3</string>
           </property>
          </row>
          <column>
@@ -129,29 +136,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelTestResult">
-         <property name="font">
-          <font>
-           <family>Tahoma</family>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Test Results</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progressBar">
+        <widget class="QProgressBar" name="progress_bar">
          <property name="value">
           <number>24</number>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelProgress">
+        <widget class="QLabel" name="progress_label">
          <property name="text">
           <string>TextLabel</string>
          </property>
@@ -162,7 +154,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
+  <widget class="QMenuBar" name="menu_bar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -171,34 +163,34 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="file_menu">
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuNew">
+    <widget class="QMenu" name="new_menu">
      <property name="title">
       <string>New</string>
      </property>
-     <addaction name="actionTest_Project"/>
-     <addaction name="actionTest_Casew"/>
-     <addaction name="actionConnection"/>
+     <addaction name="new_test_project_action"/>
+     <addaction name="new_test_case_action"/>
+     <addaction name="new_connection_action"/>
     </widget>
-    <addaction name="menuNew"/>
+    <addaction name="new_menu"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="file_menu"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionTest_Casew">
+  <widget class="QStatusBar" name="status_bar"/>
+  <action name="new_test_case_action">
    <property name="text">
     <string>Test Case</string>
    </property>
   </action>
-  <action name="actionConnection">
+  <action name="new_connection_action">
    <property name="text">
     <string>Connection</string>
    </property>
   </action>
-  <action name="actionTest_Project">
+  <action name="new_test_project_action">
    <property name="text">
     <string>Test Project</string>
    </property>
