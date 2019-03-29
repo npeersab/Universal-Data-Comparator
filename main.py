@@ -16,6 +16,8 @@
 import sys
 
 from PyQt5 import QtWidgets
+
+from dialog import WelcomeDialog
 from window import MainWindow
 
 
@@ -60,8 +62,18 @@ def main():
     pass'''
 
 
+def start_main(project):
+    global main_window
+    main_window = MainWindow(project)
+    main_window.show()
+
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
+    main_window = None
+    welcome_dialog = WelcomeDialog(start_main)
+    welcome_dialog.show()
     sys.exit(app.exec_())
+
+
+
