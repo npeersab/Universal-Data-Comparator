@@ -14,10 +14,72 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QShortcut, QWidget
+
 from testproject import TestProject
 
 
-class ConnectionTypeDialog(QtWidgets.QWidget):
+class WelcomeDialog(QWidget):
+    def __init__(self, start_main, parent=None):
+        super().__init__(parent=parent, flags=QtCore.Qt.Window)
+        self.start_main = start_main
+
+        self.setObjectName("welcome_dialog")
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.resize(350, 150)
+        self.setMaximumSize(QtCore.QSize(350, 150))
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.gridLayout.setObjectName("gridLayout")
+        spacer_1 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacer_1, 0, 1, 1, 1)
+        spacer_2 = QtWidgets.QSpacerItem(92, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacer_2, 1, 0, 1, 1)
+        self.butto_frame = QtWidgets.QFrame(self)
+        self.butto_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.butto_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.butto_frame.setObjectName("butto_frame")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.butto_frame)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.create_button = QtWidgets.QPushButton(self.butto_frame)
+        self.create_button.setObjectName("create_button")
+        self.verticalLayout.addWidget(self.create_button)
+        self.open_button = QtWidgets.QPushButton(self.butto_frame)
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        size_policy.setHorizontalStretch(0)
+        size_policy.setVerticalStretch(0)
+        size_policy.setHeightForWidth(self.open_button.sizePolicy().hasHeightForWidth())
+        self.open_button.setSizePolicy(size_policy)
+        self.open_button.setObjectName("open_button")
+        self.verticalLayout.addWidget(self.open_button)
+        self.gridLayout.addWidget(self.butto_frame, 1, 1, 1, 1)
+        spacer_3 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacer_3, 1, 2, 1, 1)
+        spacer_4 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacer_4, 2, 1, 1, 1)
+
+        self.setup_signals()
+        self.re_translate_ui()
+
+    def re_translate_ui(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("welcome_dialog", "Welcome"))
+        self.create_button.setText(_translate("welcome_dialog", "Create New Project"))
+        self.open_button.setText(_translate("welcome_dialog", "Open Existing Project"))
+
+    def setup_signals(self):
+        self.create_button.clicked.connect(self.on_create)
+
+    def on_create(self):
+        create_project_dialog = CreateProjectDialog(self)
+        create_project_dialog.show()
+
+    def create_project(self, project):
+        self.start_main(project)
+        self.hide()
+
+
+class ConnectionTypeDialog(QWidget):
 
     def __init__(self, parent):
         super().__init__(parent=parent, flags=QtCore.Qt.Window)
@@ -137,7 +199,7 @@ class ConnectionTypeDialog(QtWidgets.QWidget):
         pass
 
 
-class CreateProjectDialog(QtWidgets.QWidget):
+class CreateProjectDialog(QWidget):
 
     def __init__(self, parent):
         super().__init__(parent=parent, flags=QtCore.Qt.Window)
@@ -145,6 +207,7 @@ class CreateProjectDialog(QtWidgets.QWidget):
         self.setObjectName("create_project")
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(400, 135)
+        self.setMaximumSize(QtCore.QSize(400, 135))
         self.create_project_layout = QtWidgets.QVBoxLayout(self)
         self.create_project_layout.setObjectName("create_project_layout")
         self.widget = QtWidgets.QWidget(self)
@@ -181,21 +244,31 @@ class CreateProjectDialog(QtWidgets.QWidget):
         self.widget_layout.addWidget(self.button_frame)
         self.create_project_layout.addWidget(self.widget)
 
+        self.create_project_shortcut = QShortcut(QKeySequence('Return'), self)
+        self.cancel_shortcut = QShortcut(QKeySequence('Esc'), self)
+
         self.re_translate_ui()
         self.setup_signals()
 
     def re_translate_ui(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("create_project", "Form"))
+        self.setWindowTitle(_translate("create_project", "Create New Project"))
         self.project_name_label.setText(_translate("create_project", "Project Name:"))
         self.create_project_button.setText(_translate("create_project", "Create Project"))
         self.cancel_button.setText(_translate("create_project", "Cancel"))
 
     def setup_signals(self):
         self.create_project_button.clicked.connect(self.on_create_project)
+        self.create_project_shortcut.activated.connect(self.on_create_project)
+
+        self.cancel_button.clicked.connect(self.on_cancel)
+        self.cancel_shortcut.activated.connect(self.on_cancel)
 
     def on_create_project(self):
         project_name = self.project_name_field.text()
         project = TestProject(project_name)
-        self.parent().add_project(project)
+        self.parent().create_project(project)
+        self.close()
+
+    def on_cancel(self):
         self.close()

@@ -13,6 +13,7 @@ class Ui_create_project(object):
         create_project.setObjectName("create_project")
         create_project.setWindowModality(QtCore.Qt.ApplicationModal)
         create_project.resize(400, 135)
+        create_project.setMaximumSize(QtCore.QSize(400, 135))
         self.create_project_layout = QtWidgets.QVBoxLayout(create_project)
         self.create_project_layout.setObjectName("create_project_layout")
         self.widget = QtWidgets.QWidget(create_project)
@@ -54,7 +55,7 @@ class Ui_create_project(object):
 
     def retranslateUi(self, create_project):
         _translate = QtCore.QCoreApplication.translate
-        create_project.setWindowTitle(_translate("create_project", "Form"))
+        create_project.setWindowTitle(_translate("create_project", "Create New Project"))
         self.project_name_label.setText(_translate("create_project", "Project Name:"))
         self.create_project_button.setText(_translate("create_project", "Create Project"))
         self.cancel_button.setText(_translate("create_project", "Cancel"))

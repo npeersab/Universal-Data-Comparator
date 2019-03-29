@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>_self_</class>
- <widget class="QMainWindow" name="_self_">
+ <class>main_window</class>
+ <widget class="QMainWindow" name="main_window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,9 +23,18 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::CustomContextMenu</enum>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="animated">
+       <bool>true</bool>
+      </property>
       <column>
        <property name="text">
-        <string notr="true">Test Projects</string>
+        <string notr="true">1</string>
        </property>
       </column>
      </widget>
@@ -38,7 +47,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="vertical_layout">
        <property name="leftMargin">
         <number>9</number>
        </property>
@@ -72,6 +81,9 @@
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
          <property name="sortingEnabled">
           <bool>true</bool>
          </property>
@@ -79,9 +91,6 @@
           <bool>false</bool>
          </property>
          <attribute name="horizontalHeaderVisible">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="horizontalHeaderCascadingSectionResizes">
           <bool>true</bool>
          </attribute>
          <attribute name="horizontalHeaderHighlightSections">
@@ -93,21 +102,6 @@
          <attribute name="verticalHeaderVisible">
           <bool>true</bool>
          </attribute>
-         <row>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>2</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>3</string>
-          </property>
-         </row>
          <column>
           <property name="text">
            <string>ID</string>
@@ -128,11 +122,6 @@
            <string>Status</string>
           </property>
          </column>
-         <item row="1" column="0">
-          <property name="text">
-           <string/>
-          </property>
-         </item>
         </widget>
        </item>
        <item>
@@ -172,27 +161,66 @@
       <string>New</string>
      </property>
      <addaction name="new_test_project_action"/>
+     <addaction name="separator"/>
      <addaction name="new_test_case_action"/>
      <addaction name="new_connection_action"/>
     </widget>
     <addaction name="new_menu"/>
+    <addaction name="separator"/>
+    <addaction name="save_action"/>
+    <addaction name="save_as_action"/>
+    <addaction name="separator"/>
+    <addaction name="exit_action"/>
    </widget>
    <addaction name="file_menu"/>
   </widget>
   <widget class="QStatusBar" name="status_bar"/>
+  <action name="new_test_project_action">
+   <property name="text">
+    <string>Test Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
   <action name="new_test_case_action">
    <property name="text">
     <string>Test Case</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+T</string>
    </property>
   </action>
   <action name="new_connection_action">
    <property name="text">
     <string>Connection</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
   </action>
-  <action name="new_test_project_action">
+  <action name="save_action">
    <property name="text">
-    <string>Test Project</string>
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="save_as_action">
+   <property name="text">
+    <string>Save As..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="exit_action">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
