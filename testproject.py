@@ -13,9 +13,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from connection import Connection
 import comparator
 import datetime
+
+from connection import Connection
 
 
 class TestProject(object):
@@ -51,12 +52,12 @@ class TestCase(object):
     source_connection: Connection
     target_connection: Connection
 
-    def __init__(self, *, test_case_name, source_connection, source_query, sort_source=False, target_connection,
+    def __init__(self, *, name, source_connection, source_query, sort_source=False, target_connection,
                  target_query, sort_target=False, max_mismatch_size):
         """
         Constructor
         """
-        self.test_case_name = test_case_name
+        self.name = name
         self.source_connection = source_connection
         self.source_query = source_query
         self.sort_source = sort_source
@@ -75,7 +76,7 @@ class TestCase(object):
 
         source_mismatch, target_mismatch = comparator.compare(source_records, target_records,
                                                               max_mismatch_size=self.max_mismatch_size)
-        test_result = TestResult(self.test_case_name, self.source_query, self.target_query, source_mismatch,
+        test_result = TestResult(self.name, self.source_query, self.target_query, source_mismatch,
                                  target_mismatch)
         return test_result
 
