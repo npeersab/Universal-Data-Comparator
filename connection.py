@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import psycopg2
+import pyodbc
 
 
 class Connection(object):
@@ -21,28 +21,25 @@ class Connection(object):
     Connection to the database
     """
 
-    def __init__(self, *, name: str, host: str, port: str, db_name: str) -> None:
+    def __init__(self, name: str) -> None:
         """
         constructor to create new Connection
         """
 
         self.name = name
-        self.host = host
-        self.port = port
-        self.db_name = db_name
         self.connection = None
         self.cursor = None
 
-    def connect(self, user_details) -> None:
+    '''def connect(self, user_details) -> None:
         """
         Create connection with database
         """
 
         url = 'dbname={0} host={1} port={2} user={3} password={4}'.format(
             self.db_name, self.host, self.port, user_details.username, user_details.password)
-        self.connection = psycopg2.connect(url)
+        self.connection = psycopg2.connect(url)'''
 
-    def execute_query(self, query: str, sort):
+    def execute_query(self, query: str, sort=False):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
@@ -55,6 +52,31 @@ class Connection(object):
             data = sorted(data.fetchall())
 
         return (replace_null(row) for row in data)
+
+
+class OdbcDsnConnection(Connection):
+    def __init__(self, name, dsn):
+        super().__init__(name)
+
+        self.dsn = dsn
+
+    def connect(self, user_details):
+        url = 'DSN={0};UID={1};PWD={2}'.format(self.dsn, user_details.username, user_details.password)
+        self.connection = pyodbc.connect(url)
+
+
+class OdbcConnection(Connection):
+    def __init__(self, name, driver, server, database):
+        super().__init__(name)
+
+        self.driver = driver
+        self.server = server
+        self.database = database
+
+    def connect(self, user_details):
+        url = 'DRIVER={%s};SERVER=%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.database,
+                                                                   user_details.username, user_details.password)
+        self.connection = pyodbc.connect(url)
 
 
 def replace_null(row: tuple) -> tuple:
