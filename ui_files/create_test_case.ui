@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>create_test_case_tab</class>
- <widget class="QWidget" name="create_test_case_tab">
+ <class>create_test_case_dialog</class>
+ <widget class="QWidget" name="create_test_case_dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,88 +11,112 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Create New Test Case</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QFrame" name="frame">
+  <layout class="QVBoxLayout" name="create_test_case_dialog_layout">
+   <item>
+    <widget class="QFrame" name="main_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="main_frame_layout">
       <item>
-       <widget class="QFrame" name="frame_3">
+       <widget class="QFrame" name="test_case_name_frame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="test_case_name_frame_layout">
          <property name="leftMargin">
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="test_case_name_label">
            <property name="text">
             <string>Test Case Name</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="test_case_name_line_edit"/>
          </item>
         </layout>
        </widget>
       </item>
       <item>
        <widget class="QTabWidget" name="tabs">
+        <property name="tabPosition">
+         <enum>QTabWidget::North</enum>
+        </property>
+        <property name="tabShape">
+         <enum>QTabWidget::Rounded</enum>
+        </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="QWidget" name="sourceTab">
+        <property name="elideMode">
+         <enum>Qt::ElideNone</enum>
+        </property>
+        <property name="documentMode">
+         <bool>false</bool>
+        </property>
+        <property name="tabBarAutoHide">
+         <bool>false</bool>
+        </property>
+        <widget class="QWidget" name="source_tab">
          <attribute name="title">
-          <string>Tab 1</string>
+          <string>Source</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout">
+         <layout class="QVBoxLayout" name="source_tab_layout">
           <item>
-           <widget class="QFrame" name="frame_2">
+           <widget class="QFrame" name="source_config_frame">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <layout class="QHBoxLayout" name="source_config_frame_layout">
              <property name="leftMargin">
               <number>0</number>
              </property>
              <item>
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="source_select_connection_line_edit">
                <property name="text">
                 <string>Select Connection:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox">
-               <item>
-                <property name="text">
-                 <string>Connection 1lala</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>New Item</string>
-                </property>
-               </item>
-              </widget>
+              <widget class="QComboBox" name="source_connection_combo_box"/>
              </item>
              <item>
               <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="source_sort_check_box">
+               <property name="text">
+                <string>Sort Results</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -108,14 +132,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="source_query_label">
             <property name="text">
              <string>Query:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
+           <widget class="QPlainTextEdit" name="source_query_text_edit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -126,10 +150,87 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="targetTab">
+        <widget class="QWidget" name="target_tab">
          <attribute name="title">
-          <string>Tab 2</string>
+          <string>Target</string>
          </attribute>
+         <layout class="QVBoxLayout" name="target_tab_layout">
+          <item>
+           <widget class="QFrame" name="target_config_frame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="target_config_frame_layout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="target_select_connection_line_edit">
+               <property name="text">
+                <string>Select Connection:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="target_connection_combo_box"/>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="target_sort_check_box">
+               <property name="text">
+                <string>Sort Results</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="target_query_label">
+            <property name="text">
+             <string>Query:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPlainTextEdit" name="target_query_text_edit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
