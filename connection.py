@@ -21,7 +21,7 @@ class Connection(object):
     Connection to the database
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, trusted_connection: bool) -> None:
         """
         constructor to create new Connection
         """
@@ -29,17 +29,9 @@ class Connection(object):
         self.name = name
         self.connection = None
         self.cursor = None
+        self.trusted_connection = trusted_connection
 
-    '''def connect(self, user_details) -> None:
-        """
-        Create connection with database
-        """
-
-        url = 'dbname={0} host={1} port={2} user={3} password={4}'.format(
-            self.db_name, self.host, self.port, user_details.username, user_details.password)
-        self.connection = psycopg2.connect(url)'''
-
-    def execute_query(self, query: str, sort=False):
+    def execute_query(self, query: str, sort: bool = False):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
@@ -54,29 +46,53 @@ class Connection(object):
         return (replace_null(row) for row in data)
 
 
+class UserDetails(object):
+    """
+    Store Username and password
+    """
+
+    def __init__(self, username: str, password: str):
+        """
+        Create new user details
+        :param username: str
+        :param password: str
+        """
+
+        self.username = username
+        self.password = password
+
+
 class OdbcDsnConnection(Connection):
-    def __init__(self, name, dsn):
-        super().__init__(name)
+    def __init__(self, name: str, dsn: str, trusted_connection: bool = False):
+        super().__init__(name, trusted_connection)
 
         self.dsn = dsn
 
-    def connect(self, user_details):
-        url = 'DSN={0};UID={1};PWD={2}'.format(self.dsn, user_details.username, user_details.password)
-        self.connection = pyodbc.connect(url)
+    def connect(self, user_details: UserDetails):
+        conn_str = 'DSN={};UID={};PWD={};'
+        conn_str = conn_str.format(self.dsn, user_details.username, user_details.password)
+        if self.trusted_connection:
+            conn_str += 'Trusted_Connection=yes'
+
+        self.connection = pyodbc.connect(conn_str)
 
 
 class OdbcConnection(Connection):
-    def __init__(self, name, driver, server, database):
-        super().__init__(name)
+    def __init__(self, name: str, driver: str, server: str, port: str, database: str, trusted_connection: bool = False):
+        super().__init__(name, trusted_connection)
 
         self.driver = driver
-        self.server = server
+        self.server = server + ',{}'.format(port) if port else ''
         self.database = database
 
-    def connect(self, user_details):
-        url = 'DRIVER={%s};SERVER=%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.database,
-                                                                   user_details.username, user_details.password)
-        self.connection = pyodbc.connect(url)
+    def connect(self, user_details: UserDetails):
+        conn_str = 'DRIVER={{{}}};SERVER={};DATABASE={};UID={};PWD={}'
+        conn_str = conn_str.format(self.driver, self.server, self.database, user_details.username,
+                                   user_details.password)
+        if self.trusted_connection:
+            conn_str += 'Trusted_Connection=yes'
+
+        self.connection = pyodbc.connect(conn_str)
 
 
 def replace_null(row: tuple) -> tuple:
@@ -98,17 +114,4 @@ def replace_null(row: tuple) -> tuple:
     return tuple(row)
 
 
-class UserDetails(object):
-    """
-    Store Username and password
-    """
 
-    def __init__(self, *, password: str, username: str):
-        """
-        Create new user details
-        :param username: str
-        :param password: str
-        """
-
-        self.username = username
-        self.password = password
