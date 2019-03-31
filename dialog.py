@@ -16,12 +16,12 @@
 import pyodbc
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QAction
 from pyodbc import OperationalError
 
 from connection import OdbcDsnConnection, UserDetails, OdbcConnection
 from message_box import ErrorMessageBox, InformationMessageBox, WarningMessageBox
-from test import TestProject
+from test import TestProject, TestCase
 
 
 class WelcomeDialog(QWidget):
@@ -304,7 +304,6 @@ class CreateTestCaseDialog(QWidget):
 
         self.setObjectName("create_test_case_dialog")
         self.resize(596, 494)
-
         self.create_test_case_dialog_layout = QtWidgets.QVBoxLayout(self)
         self.create_test_case_dialog_layout.setObjectName("create_test_case_dialog_layout")
         self.main_frame = QtWidgets.QFrame(self)
@@ -317,15 +316,15 @@ class CreateTestCaseDialog(QWidget):
         self.test_case_name_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.test_case_name_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.test_case_name_frame.setObjectName("test_case_name_frame")
-        self.test_case_name_frame_layout = QtWidgets.QHBoxLayout(self.test_case_name_frame)
-        self.test_case_name_frame_layout.setContentsMargins(0, -1, -1, -1)
-        self.test_case_name_frame_layout.setObjectName("test_case_name_frame_layout")
+        self.gridLayout = QtWidgets.QGridLayout(self.test_case_name_frame)
+        self.gridLayout.setContentsMargins(0, -1, -1, -1)
+        self.gridLayout.setObjectName("gridLayout")
         self.test_case_name_label = QtWidgets.QLabel(self.test_case_name_frame)
         self.test_case_name_label.setObjectName("test_case_name_label")
-        self.test_case_name_frame_layout.addWidget(self.test_case_name_label)
+        self.gridLayout.addWidget(self.test_case_name_label, 0, 0, 1, 1)
         self.test_case_name_line_edit = QtWidgets.QLineEdit(self.test_case_name_frame)
         self.test_case_name_line_edit.setObjectName("test_case_name_line_edit")
-        self.test_case_name_frame_layout.addWidget(self.test_case_name_line_edit)
+        self.gridLayout.addWidget(self.test_case_name_line_edit, 0, 1, 1, 1)
         self.main_frame_layout.addWidget(self.test_case_name_frame)
         self.tabs = QtWidgets.QTabWidget(self.main_frame)
         self.tabs.setTabPosition(QtWidgets.QTabWidget.North)
@@ -345,9 +344,9 @@ class CreateTestCaseDialog(QWidget):
         self.source_config_frame_layout = QtWidgets.QHBoxLayout(self.source_config_frame)
         self.source_config_frame_layout.setContentsMargins(0, -1, -1, -1)
         self.source_config_frame_layout.setObjectName("source_config_frame_layout")
-        self.source_select_connection_line_edit = QtWidgets.QLabel(self.source_config_frame)
-        self.source_select_connection_line_edit.setObjectName("source_select_connection_line_edit")
-        self.source_config_frame_layout.addWidget(self.source_select_connection_line_edit)
+        self.source_select_connection_label = QtWidgets.QLabel(self.source_config_frame)
+        self.source_select_connection_label.setObjectName("source_select_connection_label")
+        self.source_config_frame_layout.addWidget(self.source_select_connection_label)
         self.source_connection_combo_box = QtWidgets.QComboBox(self.source_config_frame)
         self.source_connection_combo_box.setObjectName("source_connection_combo_box")
         self.source_config_frame_layout.addWidget(self.source_connection_combo_box)
@@ -382,9 +381,9 @@ class CreateTestCaseDialog(QWidget):
         self.target_config_frame_layout = QtWidgets.QHBoxLayout(self.target_config_frame)
         self.target_config_frame_layout.setContentsMargins(0, -1, -1, -1)
         self.target_config_frame_layout.setObjectName("target_config_frame_layout")
-        self.target_select_connection_line_edit = QtWidgets.QLabel(self.target_config_frame)
-        self.target_select_connection_line_edit.setObjectName("target_select_connection_line_edit")
-        self.target_config_frame_layout.addWidget(self.target_select_connection_line_edit)
+        self.target_select_connection_label = QtWidgets.QLabel(self.target_config_frame)
+        self.target_select_connection_label.setObjectName("target_select_connection_label")
+        self.target_config_frame_layout.addWidget(self.target_select_connection_label)
         self.target_connection_combo_box = QtWidgets.QComboBox(self.target_config_frame)
         self.target_connection_combo_box.setObjectName("target_connection_combo_box")
         self.target_config_frame_layout.addWidget(self.target_connection_combo_box)
@@ -409,23 +408,83 @@ class CreateTestCaseDialog(QWidget):
         self.target_tab_layout.addWidget(self.target_query_text_edit)
         self.tabs.addTab(self.target_tab, "")
         self.main_frame_layout.addWidget(self.tabs)
+        self.bottom_frame = QtWidgets.QFrame(self.main_frame)
+        self.bottom_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.bottom_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.bottom_frame.setObjectName("bottom_frame")
+        self.button_frame_layout = QtWidgets.QHBoxLayout(self.bottom_frame)
+        self.button_frame_layout.setObjectName("button_frame_layout")
+        self.max_mismatch_size_label = QtWidgets.QLabel(self.bottom_frame)
+        self.max_mismatch_size_label.setObjectName("max_mismatch_size_label")
+        self.button_frame_layout.addWidget(self.max_mismatch_size_label)
+        self.max_mismatch_size_line_edit = QtWidgets.QLineEdit(self.bottom_frame)
+        self.max_mismatch_size_line_edit.setObjectName("max_mismatch_size_line_edit")
+        self.button_frame_layout.addWidget(self.max_mismatch_size_line_edit)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.button_frame_layout.addItem(spacerItem4)
+        self.save_button = QtWidgets.QPushButton(self.bottom_frame)
+        self.save_button.setObjectName("save_button")
+        self.button_frame_layout.addWidget(self.save_button)
+        self.cancel_button = QtWidgets.QPushButton(self.bottom_frame)
+        self.cancel_button.setObjectName("cancel_button")
+        self.button_frame_layout.addWidget(self.cancel_button)
+        self.main_frame_layout.addWidget(self.bottom_frame)
         self.create_test_case_dialog_layout.addWidget(self.main_frame)
 
         self.re_translate_ui()
         self.tabs.setCurrentIndex(0)
+        self.load_connections()
+        self.setup_signals()
 
     def re_translate_ui(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("create_test_case_dialog", "Create New Test Case"))
         self.test_case_name_label.setText(_translate("create_test_case_dialog", "Test Case Name"))
-        self.source_select_connection_line_edit.setText(_translate("create_test_case_dialog", "Select Connection:"))
-        self.source_sort_check_box.setText(_translate("create_test_case_dialog", "Sort Results"))
+        self.source_select_connection_label.setText(_translate("create_test_case_dialog", "Select Connection:"))
+        self.source_sort_check_box.setText(_translate("create_test_case_dialog", "Sort Result"))
         self.source_query_label.setText(_translate("create_test_case_dialog", "Query:"))
         self.tabs.setTabText(self.tabs.indexOf(self.source_tab), _translate("create_test_case_dialog", "Source"))
-        self.target_select_connection_line_edit.setText(_translate("create_test_case_dialog", "Select Connection:"))
-        self.target_sort_check_box.setText(_translate("create_test_case_dialog", "Sort Results"))
+        self.target_select_connection_label.setText(_translate("create_test_case_dialog", "Select Connection:"))
+        self.target_sort_check_box.setText(_translate("create_test_case_dialog", "Sort Result"))
         self.target_query_label.setText(_translate("create_test_case_dialog", "Query:"))
         self.tabs.setTabText(self.tabs.indexOf(self.target_tab), _translate("create_test_case_dialog", "Target"))
+        self.max_mismatch_size_label.setText(_translate("create_test_case_dialog", "Max Mismatch Size:"))
+        self.save_button.setText(_translate("create_test_case_dialog", "Save"))
+        self.cancel_button.setText(_translate("create_test_case_dialog", "Cancel"))
+
+    def load_connections(self):
+        project: TestProject = self.parent().project
+
+        for connection in project.connections:
+            self.source_connection_combo_box.addItem(connection.name, connection)
+            self.target_connection_combo_box.addItem(connection.name, connection)
+
+        action = QAction('Create New Connection')
+        self.source_connection_combo_box.addAction(action)
+        self.target_connection_combo_box.addAction()
+
+    def setup_signals(self):
+        self.save_button.clicked.connect(self.on_save_button_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_button_clicked)
+
+    def on_save_button_clicked(self):
+        test_case_name = self.test_case_name_line_edit.text()
+        source_connection = self.source_connection_combo_box.currentData()
+        source_query = self.source_query_text_edit.toPlainText()
+        sort_source = self.source_sort_check_box.isChecked()
+        target_connection = self.target_connection_combo_box.currentData()
+        target_query = self.target_query_text_edit.toPlainText()
+        sort_target = self.target_sort_check_box.isChecked()
+        max_mismatch_size = int(self.max_mismatch_size_line_edit.text())
+
+        test_case = TestCase(name=test_case_name, source_connection=source_connection, source_query=source_query,
+                             sort_source=sort_source, target_connection=target_connection, target_query=target_query,
+                             sort_target=sort_target, max_mismatch_size=max_mismatch_size)
+        self.parent().add_test_case(test_case)
+        self.close()
+
+    def on_cancel_button_clicked(self):
+        self.close()
 
 
 class OdbcDsnDialog(QWidget):

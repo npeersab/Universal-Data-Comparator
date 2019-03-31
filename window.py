@@ -201,7 +201,8 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog.show()
 
     def on_new_test_case(self):
-        pass
+        create_test_case_dialog = CreateTestCaseDialog(self)
+        create_test_case_dialog.show()
 
     def on_tree_right_click(self, position):
         menu = QMenu()
@@ -230,9 +231,11 @@ class MainWindow(QtWidgets.QMainWindow):
         pass
 
     def add_test_case(self, test_case: TestCase):
+        self.project.add_test_case(test_case)
         test_case_item = TreeWidgetItem(test_case)
         self.test_cases_item.addChild(test_case_item)
 
     def add_connection(self, connection: Connection):
+        self.project.add_connection(connection)
         connection_item = TreeWidgetItem(connection)
         self.connections_item.addChild(connection_item)
