@@ -13,13 +13,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QMenu, QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu
 from PyQt5 import QtCore, QtWidgets
 
 from connection import Connection
-from dialog import ConnectionTypeDialog, CreateProjectDialog
+from dialog import ConnectionTypeDialog
 from qt_items import TreeWidgetItem
-from testproject import TestProject, TestCase
+from test import TestProject, TestCase
 
 
 class MainWindow(QtWidgets.QMainWindow):

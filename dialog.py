@@ -14,14 +14,14 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import pyodbc
+
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QShortcut, QWidget
+from PyQt5.QtWidgets import QWidget
 from pyodbc import OperationalError
 
 from connection import OdbcDsnConnection, UserDetails, OdbcConnection
 from message_box import ErrorMessageBox, InformationMessageBox, WarningMessageBox
-from testproject import TestProject
+from test import TestProject
 
 
 class WelcomeDialog(QWidget):
