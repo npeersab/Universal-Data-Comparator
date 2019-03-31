@@ -16,9 +16,10 @@
 from PyQt5.QtWidgets import QMenu, QTreeWidgetItem
 from PyQt5 import QtCore, QtWidgets
 
+from connection import Connection
 from dialog import ConnectionTypeDialog, CreateProjectDialog
 from qt_items import TreeWidgetItem
-from testproject import TestProject
+from testproject import TestProject, TestCase
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -129,6 +130,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # UI code ends from here #
         ##########################
 
+        self.test_cases_item = TreeWidgetItem(self.project.test_cases, name='Test Cases')
+        self.connections_item = TreeWidgetItem(self.project.connections, name='Connections')
+
         self.setup_signals()
         self.re_translate_ui()
         self.load_project()
@@ -138,12 +142,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(_translate("main_window", "MainWindow"))
         self.test_results_label.setText(_translate("main_window", "Test Results"))
         self.result_table.setSortingEnabled(True)
-        item = self.result_table.verticalHeaderItem(0)
-        item.setText(_translate("main_window", "1"))
-        item = self.result_table.verticalHeaderItem(1)
-        item.setText(_translate("main_window", "2"))
-        item = self.result_table.verticalHeaderItem(2)
-        item.setText(_translate("main_window", "3"))
         item = self.result_table.horizontalHeaderItem(0)
         item.setText(_translate("main_window", "ID"))
         item = self.result_table.horizontalHeaderItem(1)
@@ -177,22 +175,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def load_project(self):
         self.test_project_tree.headerItem().setText(0, self.project.name)
-        
-        test_cases_item = TreeWidgetItem(self.project.test_cases, name='Test Cases')
+
         for test_case in self.project.test_cases:
-            test_case_item = TreeWidgetItem(test_case)
-            test_cases_item.addChild(test_case_item)
-        
-        connections_item = TreeWidgetItem(self.project.connections, name='Connections')
+            self.add_test_case(test_case)
+
         for connection in self.project.connections:
-            connection_item = TreeWidgetItem(connection)
-            connections_item.addChild(connection_item)
+            self.add_connection(connection)
         
-        self.test_project_tree.addTopLevelItems((test_cases_item, connections_item))
+        self.test_project_tree.addTopLevelItems((self.test_cases_item, self.connections_item))
 
     def on_new_test_project(self):
-        create_project_dialog = CreateProjectDialog(self)
-        create_project_dialog.show()
+        pass
 
     def on_new_connection(self):
         dialog = ConnectionTypeDialog(self)
@@ -219,10 +212,18 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_save_as(self):
         pass
 
-    def delete_tree_items(self, *items: QTreeWidgetItem):
+    def delete_tree_items(self, *items: TreeWidgetItem):
         root = self.test_project_tree.invisibleRootItem()
         for item in items:
             (item.parent() or root).removeChild(item)
 
     def odbc(self):
         pass
+
+    def add_test_case(self, test_case: TestCase):
+        test_case_item = TreeWidgetItem(test_case)
+        self.test_cases_item.addChild(test_case_item)
+
+    def add_connection(self, connection: Connection):
+        connection_item = TreeWidgetItem(connection)
+        self.connections_item.addChild(connection_item)
