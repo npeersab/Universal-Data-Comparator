@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 
 class TreeWidgetItem(QTreeWidgetItem):
 
-    def __init__(self, value, name=None):
+    def __init__(self, value, name: str = None):
         if not name:
             name = value.name
 
