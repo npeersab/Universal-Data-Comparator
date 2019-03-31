@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>odbc_dsn_dialog</class>
+ <widget class="QWidget" name="odbc_dsn_dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>233</height>
+    <width>400</width>
+    <height>250</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Form</string>
+  <property name="maximumSize">
+   <size>
+    <width>400</width>
+    <height>250</height>
+   </size>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <property name="windowTitle">
+   <string>ODBC DSN Connection</string>
+  </property>
+  <layout class="QVBoxLayout" name="vertical_layout">
    <item>
-    <widget class="QFrame" name="frame_2">
+    <widget class="QFrame" name="main_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="main_frame_layout">
       <item>
-       <widget class="QFrame" name="frame">
+       <widget class="QFrame" name="form_frame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -33,34 +42,55 @@
         </property>
         <layout class="QFormLayout" name="formLayout">
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="connection_name_label">
            <property name="text">
-            <string>Data Sorce Name: </string>
+            <string>Connection Name:</string>
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="connection_name_line_edit"/>
+         </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="dsn_label">
+           <property name="text">
+            <string>Data Source Name: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="dsn_combo_box"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="windows_auth_check_box">
+           <property name="text">
+            <string>Use windows authentication</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="user_name_label">
            <property name="text">
             <string>Username:</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="username_line_edit"/>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="password_label">
            <property name="text">
             <string>Password:</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="lineEdit_3"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox"/>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="password_line_edit">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -79,7 +109,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QFrame" name="frame_3">
+       <widget class="QFrame" name="button_frame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -88,7 +118,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="horizontal_spacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -101,23 +131,35 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="connect_button">
            <property name="text">
             <string>Connect</string>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>Save</string>
+           <property name="shortcut">
+            <string>Return</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="save_button">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Save</string>
+           </property>
+           <property name="shortcut">
+            <string>Ctrl+S</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cancel_button">
            <property name="text">
             <string>Cancel</string>
+           </property>
+           <property name="shortcut">
+            <string>Esc</string>
            </property>
           </widget>
          </item>
