@@ -14,131 +14,143 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="central_widget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="central_widget_layout">
     <item>
-     <widget class="QTreeWidget" name="test_project_tree">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="contextMenuPolicy">
-       <enum>Qt::CustomContextMenu</enum>
-      </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
-      <property name="animated">
+      <property name="opaqueResize">
        <bool>true</bool>
       </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item>
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+      <property name="handleWidth">
+       <number>5</number>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="vertical_layout">
-       <property name="leftMargin">
-        <number>9</number>
+      <widget class="QFrame" name="test_project_tree_frame">
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
-       <property name="topMargin">
-        <number>0</number>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-       <property name="rightMargin">
-        <number>0</number>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
        </property>
-       <property name="bottomMargin">
-        <number>0</number>
+       <layout class="QVBoxLayout" name="test_project_tree_frame_layout">
+        <item>
+         <widget class="QTreeWidget" name="test_project_tree">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="animated">
+           <bool>true</bool>
+          </property>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="result_frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-       <item>
-        <widget class="QLabel" name="test_results_label">
-         <property name="text">
-          <string>Test Results</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTableWidget" name="result_table">
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="editTriggers">
-          <set>QAbstractItemView::NoEditTriggers</set>
-         </property>
-         <property name="dragDropOverwriteMode">
-          <bool>false</bool>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode">
-          <enum>QAbstractItemView::ExtendedSelection</enum>
-         </property>
-         <property name="sortingEnabled">
-          <bool>true</bool>
-         </property>
-         <property name="wordWrap">
-          <bool>false</bool>
-         </property>
-         <attribute name="horizontalHeaderVisible">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="horizontalHeaderHighlightSections">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderVisible">
-          <bool>true</bool>
-         </attribute>
-         <column>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="result_frame_layout">
+        <item>
+         <widget class="QLabel" name="test_results_label">
           <property name="text">
-           <string>ID</string>
+           <string>Test Results</string>
           </property>
-         </column>
-         <column>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="result_table">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="horizontalHeaderHighlightSections">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Test Case Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Execution Time Stamp</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Status</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="progress_bar">
+          <property name="value">
+           <number>24</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="progress_label">
           <property name="text">
-           <string>Test Case Name</string>
+           <string>Executing Test Case 2</string>
           </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Execution Time Stamp</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Status</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progress_bar">
-         <property name="value">
-          <number>24</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="progress_label">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
