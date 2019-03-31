@@ -13,10 +13,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import pyodbc
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QWidget
+from pyodbc import OperationalError
 
+from connection import OdbcDsnConnection, UserDetails, OdbcConnection
+from message_box import ErrorMessageBox, InformationMessageBox, WarningMessageBox
 from testproject import TestProject
 
 
@@ -26,37 +30,43 @@ class WelcomeDialog(QWidget):
         self.start_main = start_main
 
         self.setObjectName("welcome_dialog")
+        self.setObjectName("welcome_dialog")
         self.setWindowModality(QtCore.Qt.ApplicationModal)
-        self.resize(350, 150)
-        self.setMaximumSize(QtCore.QSize(350, 150))
+        self.resize(350, 110)
+        self.setMaximumSize(QtCore.QSize(350, 110))
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.gridLayout.setObjectName("gridLayout")
-        spacer_1 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacer_1, 0, 1, 1, 1)
-        spacer_2 = QtWidgets.QSpacerItem(92, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacer_2, 1, 0, 1, 1)
-        self.butto_frame = QtWidgets.QFrame(self)
-        self.butto_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.butto_frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.butto_frame.setObjectName("butto_frame")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.butto_frame)
+        spacer_item_1 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacer_item_1, 0, 1, 1, 1)
+        spacer_item_2 = QtWidgets.QSpacerItem(92, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacer_item_2, 1, 0, 1, 1)
+        self.button_frame = QtWidgets.QFrame(self)
+        self.button_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.button_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.button_frame.setObjectName("button_frame")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.button_frame)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.create_button = QtWidgets.QPushButton(self.butto_frame)
+        self.create_button = QtWidgets.QPushButton(self.button_frame)
+        self.create_button.setMinimumSize(QtCore.QSize(150, 0))
+        self.create_button.setAutoFillBackground(False)
+        self.create_button.setFlat(False)
         self.create_button.setObjectName("create_button")
         self.verticalLayout.addWidget(self.create_button)
-        self.open_button = QtWidgets.QPushButton(self.butto_frame)
+        self.open_button = QtWidgets.QPushButton(self.button_frame)
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
         size_policy.setHeightForWidth(self.open_button.sizePolicy().hasHeightForWidth())
         self.open_button.setSizePolicy(size_policy)
+        self.open_button.setAutoFillBackground(False)
+        self.open_button.setFlat(False)
         self.open_button.setObjectName("open_button")
         self.verticalLayout.addWidget(self.open_button)
-        self.gridLayout.addWidget(self.butto_frame, 1, 1, 1, 1)
-        spacer_3 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacer_3, 1, 2, 1, 1)
-        spacer_4 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacer_4, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.button_frame, 1, 1, 1, 1)
+        spacer_item_3 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacer_item_3, 1, 2, 1, 1)
+        spacer_item_4 = QtWidgets.QSpacerItem(20, 21, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacer_item_4, 2, 1, 1, 1)
 
         self.setup_signals()
         self.re_translate_ui()
@@ -65,7 +75,9 @@ class WelcomeDialog(QWidget):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("welcome_dialog", "Welcome"))
         self.create_button.setText(_translate("welcome_dialog", "Create New Project"))
+        self.create_button.setShortcut(_translate("welcome_dialog", "Ctrl+N"))
         self.open_button.setText(_translate("welcome_dialog", "Open Existing Project"))
+        self.open_button.setShortcut(_translate("welcome_dialog", "Ctrl+O"))
 
     def setup_signals(self):
         self.create_button.clicked.connect(self.on_create)
@@ -170,27 +182,38 @@ class ConnectionTypeDialog(QWidget):
         item.setText(_translate("connection_type_window", "Native Python"))
         self.connection_type_list.setSortingEnabled(__sortingEnabled)
         self.next_button.setText(_translate("connection_type_window", "Next"))
+        self.next_button.setShortcut(_translate("connection_type_window", "Return"))
         self.cancel_button.setText(_translate("connection_type_window", "Cancel"))
+        self.cancel_button.setShortcut(_translate("connection_type_window", "Esc"))
 
     def set_connector(self):
-        self.next_button.clicked.connect(self.on_next)
+        self.next_button.clicked.connect(self.on_next_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
 
-    def on_next(self):
+    def on_next_clicked(self):
         connection_type = self.connection_type_list.selectedItems()
 
-        connection_methods = {self.connection_type_list.item(0).text(): self.odbc_using_dsn,
-                              self.connection_type_list.item(1).text(): self.odbc,
-                              self.connection_type_list.item(2).text(): self.jdbc,
-                              self.connection_type_list.item(3).text(): self.native_python}
+        if len(connection_type) > 0:
+            connection_methods = {self.connection_type_list.item(0).text(): self.odbc_using_dsn,
+                                  self.connection_type_list.item(1).text(): self.odbc,
+                                  self.connection_type_list.item(2).text(): self.jdbc,
+                                  self.connection_type_list.item(3).text(): self.native_python}
 
-        connection_methods[connection_type[0].text()]()
+            connection_methods[connection_type[0].text()]()
+
+    def on_cancel_clicked(self):
+        self.close()
 
     def odbc_using_dsn(self):
-        self.parent().odbc()
+        odbc_dsn_dialog = OdbcDsnDialog(self.parent())
+        odbc_dsn_dialog.show()
+        self.close()
         pass
 
     def odbc(self):
-        pass
+        odbc_dialog = OdbcDialog(self.parent())
+        odbc_dialog.show()
+        self.close()
 
     def jdbc(self):
         pass
@@ -244,9 +267,6 @@ class CreateProjectDialog(QWidget):
         self.widget_layout.addWidget(self.button_frame)
         self.create_project_layout.addWidget(self.widget)
 
-        self.create_project_shortcut = QShortcut(QKeySequence('Return'), self)
-        self.cancel_shortcut = QShortcut(QKeySequence('Esc'), self)
-
         self.re_translate_ui()
         self.setup_signals()
 
@@ -255,20 +275,349 @@ class CreateProjectDialog(QWidget):
         self.setWindowTitle(_translate("create_project", "Create New Project"))
         self.project_name_label.setText(_translate("create_project", "Project Name:"))
         self.create_project_button.setText(_translate("create_project", "Create Project"))
+        self.create_project_button.setShortcut(_translate("create_project", "Return"))
         self.cancel_button.setText(_translate("create_project", "Cancel"))
+        self.cancel_button.setShortcut(_translate("create_project", "Esc"))
 
     def setup_signals(self):
-        self.create_project_button.clicked.connect(self.on_create_project)
-        self.create_project_shortcut.activated.connect(self.on_create_project)
+        self.create_project_button.clicked.connect(self.on_create_project_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
 
-        self.cancel_button.clicked.connect(self.on_cancel)
-        self.cancel_shortcut.activated.connect(self.on_cancel)
-
-    def on_create_project(self):
+    def on_create_project_clicked(self):
         project_name = self.project_name_field.text()
-        project = TestProject(project_name)
-        self.parent().create_project(project)
+
+        if project_name == '':
+            message = WarningMessageBox(self, 'No Project Name', 'Please Enter Project Name')
+            message.show()
+        else:
+            project = TestProject(project_name)
+            self.parent().create_project(project)
+            self.close()
+
+    def on_cancel_clicked(self):
         self.close()
 
-    def on_cancel(self):
+
+class OdbcDsnDialog(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent=parent, flags=QtCore.Qt.Window)
+        self.connection = None
+
+        self.setObjectName("odbc_dsn_dialog")
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.resize(400, 250)
+        self.setMaximumSize(QtCore.QSize(400, 250))
+        self.vertical_layout = QtWidgets.QVBoxLayout(self)
+        self.vertical_layout.setObjectName("vertical_layout")
+        self.main_frame = QtWidgets.QFrame(self)
+        self.main_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.main_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.main_frame.setObjectName("main_frame")
+        self.main_frame_layout = QtWidgets.QVBoxLayout(self.main_frame)
+        self.main_frame_layout.setObjectName("main_frame_layout")
+        self.form_frame = QtWidgets.QFrame(self.main_frame)
+        self.form_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.form_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.form_frame.setObjectName("form_frame")
+        self.formLayout = QtWidgets.QFormLayout(self.form_frame)
+        self.formLayout.setObjectName("formLayout")
+        self.connection_name_label = QtWidgets.QLabel(self.form_frame)
+        self.connection_name_label.setObjectName("connection_name_label")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.connection_name_label)
+        self.connection_name_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.connection_name_line_edit.setObjectName("connection_name_line_edit")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.connection_name_line_edit)
+        self.dsn_label = QtWidgets.QLabel(self.form_frame)
+        self.dsn_label.setObjectName("dsn_label")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.dsn_label)
+        self.dsn_combo_box = QtWidgets.QComboBox(self.form_frame)
+        self.dsn_combo_box.setObjectName("dsn_combo_box")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.dsn_combo_box)
+        self.windows_auth_check_box = QtWidgets.QCheckBox(self.form_frame)
+        self.windows_auth_check_box.setObjectName("windows_auth_check_box")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.windows_auth_check_box)
+        self.user_name_label = QtWidgets.QLabel(self.form_frame)
+        self.user_name_label.setObjectName("user_name_label")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.user_name_label)
+        self.username_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.username_line_edit.setObjectName("username_line_edit")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.username_line_edit)
+        self.password_label = QtWidgets.QLabel(self.form_frame)
+        self.password_label.setObjectName("password_label")
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.password_label)
+        self.password_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.password_line_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_line_edit.setObjectName("password_line_edit")
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.password_line_edit)
+        self.main_frame_layout.addWidget(self.form_frame)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.main_frame_layout.addItem(spacerItem)
+        self.button_frame = QtWidgets.QFrame(self.main_frame)
+        self.button_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.button_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.button_frame.setObjectName("button_frame")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.button_frame)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem1 = QtWidgets.QSpacerItem(60, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.connect_button = QtWidgets.QPushButton(self.button_frame)
+        self.connect_button.setObjectName("connect_button")
+        self.horizontalLayout.addWidget(self.connect_button)
+        self.save_button = QtWidgets.QPushButton(self.button_frame)
+        self.save_button.setEnabled(False)
+        self.save_button.setObjectName("save_button")
+        self.horizontalLayout.addWidget(self.save_button)
+        self.cancel_button = QtWidgets.QPushButton(self.button_frame)
+        self.cancel_button.setObjectName("cancel_button")
+        self.horizontalLayout.addWidget(self.cancel_button)
+        self.main_frame_layout.addWidget(self.button_frame)
+        self.vertical_layout.addWidget(self.main_frame)
+
+        self.re_translate_ui()
+        self.load_dsn()
+        self.setup_signals()
+
+    def re_translate_ui(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("odbc_dsn_dialog", "ODBC DSN Connection"))
+        self.connection_name_label.setText(_translate("odbc_dsn_dialog", "Connection Name:"))
+        self.dsn_label.setText(_translate("odbc_dsn_dialog", "Data Source Name: "))
+        self.windows_auth_check_box.setText(_translate("odbc_dsn_dialog", "Use windows authentication"))
+        self.user_name_label.setText(_translate("odbc_dsn_dialog", "Username:"))
+        self.password_label.setText(_translate("odbc_dsn_dialog", "Password:"))
+        self.connect_button.setText(_translate("odbc_dsn_dialog", "Connect"))
+        self.connect_button.setShortcut(_translate("odbc_dsn_dialog", "Return"))
+        self.save_button.setText(_translate("odbc_dsn_dialog", "Save"))
+        self.save_button.setShortcut(_translate("odbc_dsn_dialog", "Ctrl+S"))
+        self.cancel_button.setText(_translate("odbc_dsn_dialog", "Cancel"))
+        self.cancel_button.setShortcut(_translate("odbc_dsn_dialog", "Esc"))
+
+    def load_dsn(self):
+        for dsn in pyodbc.dataSources():
+            self.dsn_combo_box.addItem(dsn)
+
+    def setup_signals(self):
+        self.windows_auth_check_box.toggled.connect(self.on_windows_auth_toggled)
+        self.connect_button.clicked.connect(self.on_connect_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
+        self.save_button.clicked.connect(self.on_save_clicked)
+
+    def on_windows_auth_toggled(self):
+        if self.windows_auth_check_box.isChecked():
+            self.username_line_edit.setDisabled(True)
+            self.password_line_edit.setDisabled(True)
+        else:
+            self.username_line_edit.setDisabled(False)
+            self.password_line_edit.setDisabled(False)
+
+    def on_connect_clicked(self):
+
+        connection_name = self.connection_name_line_edit.text()
+        dsn = self.dsn_combo_box.currentText()
+        trusted_connection = self.windows_auth_check_box.isChecked()
+        
+        username = ''
+        password = ''
+        if not trusted_connection:
+            username = self.username_line_edit.text()
+            password = self.password_line_edit.text()
+        user_details = UserDetails(username, password)
+        
+        self.connection = OdbcDsnConnection(connection_name, dsn, trusted_connection)
+        try:
+            self.connection.connect(user_details)
+        except OperationalError as e:
+            self.save_button.setEnabled(False)
+            message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Data Source {}'.format(dsn),
+                                      e.args[1])
+            message.show()
+        except Exception as e:
+            self.save_button.setEnabled(False)
+            message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Data Source {}'.format(dsn),
+                                      str(e))
+            message.show()
+        else:
+            self.save_button.setEnabled(True)
+            message = InformationMessageBox(self, 'Connection Successful',
+                                            'Connection Successful for Data Source {}'.format(dsn))
+            message.show()
+
+    def on_cancel_clicked(self):
+        self.close()
+
+    def on_save_clicked(self):
+        self.parent().add_connection(self.connection)
+        self.close()
+
+
+class OdbcDialog(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent=parent, flags=QtCore.Qt.Window)
+        self.connection = None
+        self.setObjectName("odbc_dialog")
+
+        self.resize(420, 329)
+        self.odbc_dialog_layout = QtWidgets.QVBoxLayout(self)
+        self.odbc_dialog_layout.setObjectName("odbc_dialog_layout")
+        self.main_frame = QtWidgets.QFrame(self)
+        self.main_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.main_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.main_frame.setObjectName("main_frame")
+        self.main_frame_layout = QtWidgets.QVBoxLayout(self.main_frame)
+        self.main_frame_layout.setObjectName("main_frame_layout")
+        self.form_frame = QtWidgets.QFrame(self.main_frame)
+        self.form_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.form_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.form_frame.setObjectName("form_frame")
+        self.form_frame_layout = QtWidgets.QFormLayout(self.form_frame)
+        self.form_frame_layout.setObjectName("form_frame_layout")
+        self.driver_label = QtWidgets.QLabel(self.form_frame)
+        self.driver_label.setObjectName("driver_label")
+        self.form_frame_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.driver_label)
+        self.server_label = QtWidgets.QLabel(self.form_frame)
+        self.server_label.setObjectName("server_label")
+        self.form_frame_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.server_label)
+        self.server_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.server_line_edit.setObjectName("server_line_edit")
+        self.form_frame_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.server_line_edit)
+        self.port_label = QtWidgets.QLabel(self.form_frame)
+        self.port_label.setObjectName("port_label")
+        self.form_frame_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.port_label)
+        self.port_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.port_line_edit.setObjectName("port_line_edit")
+        self.form_frame_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.port_line_edit)
+        self.database_label = QtWidgets.QLabel(self.form_frame)
+        self.database_label.setObjectName("database_label")
+        self.form_frame_layout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.database_label)
+        self.database_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.database_line_edit.setObjectName("database_line_edit")
+        self.form_frame_layout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.database_line_edit)
+        self.username_label = QtWidgets.QLabel(self.form_frame)
+        self.username_label.setObjectName("username_label")
+        self.form_frame_layout.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.username_label)
+        self.username_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.username_line_edit.setObjectName("username_line_edit")
+        self.form_frame_layout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.username_line_edit)
+        self.password_label = QtWidgets.QLabel(self.form_frame)
+        self.password_label.setObjectName("password_label")
+        self.form_frame_layout.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.password_label)
+        self.password_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.password_line_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_line_edit.setObjectName("password_line_edit")
+        self.form_frame_layout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.password_line_edit)
+        self.driver_combo_box = QtWidgets.QComboBox(self.form_frame)
+        self.driver_combo_box.setObjectName("driver_combo_box")
+        self.form_frame_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.driver_combo_box)
+        self.connection_name_line_edit = QtWidgets.QLineEdit(self.form_frame)
+        self.connection_name_line_edit.setObjectName("connection_name_line_edit")
+        self.form_frame_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.connection_name_line_edit)
+        self.connection_name_label = QtWidgets.QLabel(self.form_frame)
+        self.connection_name_label.setObjectName("connection_name_label")
+        self.form_frame_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.connection_name_label)
+        self.windows_auth_check_box = QtWidgets.QCheckBox(self.form_frame)
+        self.windows_auth_check_box.setObjectName("windows_auth_check_box")
+        self.form_frame_layout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.windows_auth_check_box)
+        self.main_frame_layout.addWidget(self.form_frame)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.main_frame_layout.addItem(spacerItem)
+        self.button_frame = QtWidgets.QFrame(self.main_frame)
+        self.button_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.button_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.button_frame.setObjectName("button_frame")
+        self.button_frame_layout = QtWidgets.QHBoxLayout(self.button_frame)
+        self.button_frame_layout.setObjectName("button_frame_layout")
+        spacerItem1 = QtWidgets.QSpacerItem(116, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.button_frame_layout.addItem(spacerItem1)
+        self.connect_button = QtWidgets.QPushButton(self.button_frame)
+        self.connect_button.setObjectName("connect_button")
+        self.button_frame_layout.addWidget(self.connect_button)
+        self.save_button = QtWidgets.QPushButton(self.button_frame)
+        self.save_button.setEnabled(False)
+        self.save_button.setObjectName("save_button")
+        self.button_frame_layout.addWidget(self.save_button)
+        self.cancel_button = QtWidgets.QPushButton(self.button_frame)
+        self.cancel_button.setObjectName("cancel_button")
+        self.button_frame_layout.addWidget(self.cancel_button)
+        self.main_frame_layout.addWidget(self.button_frame)
+        self.odbc_dialog_layout.addWidget(self.main_frame)
+
+        self.re_translate_ui()
+        self.setup_signals()
+        self.load_odbc_drivers()
+
+    def re_translate_ui(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("odbc_dialog", "ODBC Connection"))
+        self.driver_label.setText(_translate("odbc_dialog", "Driver:"))
+        self.server_label.setText(_translate("odbc_dialog", "Server:"))
+        self.port_label.setText(_translate("odbc_dialog", "Port:"))
+        self.database_label.setText(_translate("odbc_dialog", "Database:"))
+        self.username_label.setText(_translate("odbc_dialog", "Username:"))
+        self.password_label.setText(_translate("odbc_dialog", "Password:"))
+        self.connection_name_label.setText(_translate("odbc_dialog", "Connection Name:"))
+        self.windows_auth_check_box.setText(_translate("odbc_dialog", "Use Windows authentication"))
+        self.connect_button.setText(_translate("odbc_dialog", "Connect"))
+        self.connect_button.setShortcut(_translate("odbc_dialog", "Return"))
+        self.save_button.setText(_translate("odbc_dialog", "Save"))
+        self.save_button.setShortcut(_translate("odbc_dialog", "Ctrl+S"))
+        self.cancel_button.setText(_translate("odbc_dialog", "Cancel"))
+        self.cancel_button.setShortcut(_translate("odbc_dialog", "Esc"))
+
+    def setup_signals(self):
+        self.windows_auth_check_box.toggled.connect(self.on_windows_auth_toggled)
+        self.connect_button.clicked.connect(self.on_connect_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
+        self.save_button.clicked.connect(self.on_save_clicked)
+
+    def load_odbc_drivers(self):
+        for driver in pyodbc.drivers():
+            self.driver_combo_box.addItem(driver)
+
+    def on_windows_auth_toggled(self):
+        if self.windows_auth_check_box.isChecked():
+            self.username_line_edit.setDisabled(True)
+            self.password_line_edit.setDisabled(True)
+        else:
+            self.username_line_edit.setDisabled(False)
+            self.password_line_edit.setDisabled(False)
+
+    def on_connect_clicked(self):
+        connection_name = self.connection_name_line_edit.text()
+        driver = self.driver_combo_box.currentText()
+        server = self.server_line_edit.text()
+        port = self.port_line_edit.text()
+        database = self.database_line_edit.text()
+        trusted_connection = self.windows_auth_check_box.isChecked()
+        
+        username = ''
+        password = ''
+        if not trusted_connection:
+            username = self.username_line_edit.text()
+            password = self.password_line_edit.text()
+        user_details = UserDetails(username, password)
+        
+        self.connection = OdbcConnection(connection_name, driver, server, port, database, trusted_connection)
+        try:
+            self.connection.connect(user_details)
+        except OperationalError as e:
+            self.save_button.setEnabled(False)
+            message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Server {}'.format(server),
+                                      e.args[1])
+            message.show()
+        except Exception as e:
+            self.save_button.setEnabled(False)
+            message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Server {}'.format(server),
+                                      str(e))
+            message.show()
+        else:
+            self.save_button.setEnabled(True)
+            message = InformationMessageBox(self, 'Connection Successful',
+                                            'Connection Successful for Server {}'.format(server))
+            message.show()
+
+    def on_cancel_clicked(self):
+        self.close()
+
+    def on_save_clicked(self):
+        self.parent().add_connection(self.connection)
         self.close()
