@@ -17,10 +17,14 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 
 
 class TreeWidgetItem(QTreeWidgetItem):
+    """
+    Custom QTreeWidgetItem to store value
+    """
 
-    def __init__(self, value, name: str = None):
-        if not name:
-            name = value.name
+    def __init__(self, *, name: str, value):
+        """
+        :type name: str
+        """
 
         super().__init__([name])
         self.value = value
