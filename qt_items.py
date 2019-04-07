@@ -21,9 +21,9 @@ class TreeWidgetItem(QTreeWidgetItem):
     Custom QTreeWidgetItem to store value
     """
 
-    def __init__(self, *, name: str, value):
+    def __init__(self, name: str, value):
         """
-        :type name: str
+        :type name: str name of the value
         """
 
         super().__init__([name])
