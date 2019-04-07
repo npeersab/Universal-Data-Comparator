@@ -31,7 +31,7 @@ class Connection(object):
         self.cursor = None
         self.trusted_connection = trusted_connection
 
-    def execute_query(self, query: str, sort: bool = False):
+    def execute_query(self, query: str, on_fetch, sort: bool = False):
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
@@ -43,7 +43,12 @@ class Connection(object):
         if sort:
             data = sorted(data.fetchall())
 
-        return (replace_null(row) for row in data)
+        def result_generator():
+            for row in data:
+                on_fetch(row)
+                yield replace_null(row)
+
+        return result_generator()
 
 
 class UserDetails(object):
