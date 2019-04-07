@@ -71,14 +71,28 @@ class TestCase(object):
         Execute the Test Case
         """
 
-        source_records = self.source_connection.execute_query(self.source_query, self.sort_source)
-        target_records = self.target_connection.execute_query(self.target_query, self.sort_target)
+        source_records = self.source_connection.execute_query(self.source_query, self.create_on_fetch('source.csv'),
+                                                              self.sort_source)
+        target_records = self.target_connection.execute_query(self.target_query, self.create_on_fetch('target.csv'),
+                                                              self.sort_target)
 
         source_mismatch, target_mismatch = comparator.compare(source_records, target_records,
                                                               max_mismatch_size=self.max_mismatch_size)
         test_result = TestResult(self.name, self.source_query, self.target_query, source_mismatch,
                                  target_mismatch)
         return test_result
+
+    def create_on_fetch(self, file: str):
+
+        def on_fetch(data: tuple):
+            source_file_name = r'{}\{}'.format(self.name, file)
+
+            import os
+            os.makedirs(self.name, exist_ok=True)
+            source_file = open(source_file_name, 'a')
+            source_file.write(str(data))
+
+        return on_fetch
 
 
 class TestResult(object):

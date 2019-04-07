@@ -190,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for connection in self.project.connections:
             self.add_connection(connection)
-        
+
         self.test_project_tree.addTopLevelItems((self.test_cases_item, self.connections_item))
 
     def on_new_test_project(self):
@@ -207,11 +207,18 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_tree_right_click(self, position):
         menu = QMenu()
         new_menu = QMenu('New')
-        action = QAction('Delete')
+        action = QAction('Execute')
+        action.triggered.connect(self.on_execute_triggered)
         menu.addAction(new_menu.menuAction())
+        menu.addAction(action)
         new_menu.addAction(self.new_test_case_action)
         new_menu.addAction(self.new_connection_action)
         menu.exec_(self.test_project_tree.viewport().mapToGlobal(position))
+
+    def on_execute_triggered(self):
+        items = self.test_project_tree.selectedItems()
+        for item in items:
+            item.value.execute()
 
     @staticmethod
     def on_exit():
