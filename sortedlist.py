@@ -37,3 +37,6 @@ class SortedList(object):
 
     def __len__(self):
         return len(self.data)
+
+    def __iter__(self):
+        return self.data.__iter__()
