@@ -46,7 +46,7 @@ class Connection(object):
         def result_generator():
             for row in data:
                 on_fetch(row)
-                yield replace_null(row)
+                yield DataRow(row)
 
         return result_generator()
 
@@ -119,4 +119,76 @@ def replace_null(row: tuple) -> tuple:
     return tuple(row)
 
 
+class DataRow:
+    def __init__(self, data):
+        self.data = tuple(data)
 
+    def __eq__(self, other):
+        return self.data == other.data
+
+    def __lt__(self, other):
+        for value1, value2 in zip(self.data, other.data):
+            if value1:
+                if value2:
+                    if value1 == value2:
+                        continue
+                    else:
+                        return value1 < value2
+                else:
+                    return False
+            else:
+                if value2:
+                    return True
+                else:
+                    continue
+
+    def __le__(self, other):
+        for value1, value2 in zip(self.data, other.data):
+            if value1:
+                if value2:
+                    if value1 == value2:
+                        continue
+                    else:
+                        return value1 <= value2
+                else:
+                    return False
+            else:
+                if value2:
+                    return True
+                else:
+                    continue
+
+    def __gt__(self, other):
+        for value1, value2 in zip(self.data, other.data):
+            if value1:
+                if value2:
+                    if value1 == value2:
+                        continue
+                    else:
+                        return value1 > value2
+                else:
+                    return True
+            else:
+                if value2:
+                    return False
+                else:
+                    continue
+
+    def __ge__(self, other):
+        for value1, value2 in zip(self.data, other.data):
+            if value1:
+                if value2:
+                    if value1 == value2:
+                        continue
+                    else:
+                        return value1 >= value2
+                else:
+                    return True
+            else:
+                if value2:
+                    return False
+                else:
+                    continue
+
+    def __iter__(self):
+        return self.data.__iter__()
