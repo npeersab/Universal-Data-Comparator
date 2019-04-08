@@ -12,11 +12,16 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import csv
+import logging
+import os
 
 import comparator
 import datetime
 
 from connection import Connection
+
+logger = logging.getLogger()
 
 
 class TestProject(object):
@@ -31,13 +36,13 @@ class TestProject(object):
         self.name = project_name
         self.connections = []
         self.test_cases = []
-        
+
     def add_connection(self, connection):
         """
         Add new Connection to the Test Project
         """
         self.connections.append(connection)
-        
+
     def add_test_case(self, test_case):
         """
         Add new Test Case in the Test Project
@@ -65,34 +70,28 @@ class TestCase(object):
         self.target_query = target_query
         self.sort_target = sort_target
         self.max_mismatch_size = max_mismatch_size
+        logger.info('Created Test Case {}'.format(self.name))
 
     def execute(self):
         """
         Execute the Test Case
         """
 
-        source_records = self.source_connection.execute_query(self.source_query, self.create_on_fetch('source.csv'),
-                                                              self.sort_source)
-        target_records = self.target_connection.execute_query(self.target_query, self.create_on_fetch('target.csv'),
-                                                              self.sort_target)
+        logger.info('Executing Test Case {}'.format(self.name))
+        source_writer = ResultWriter(self.name, 'source')
+        target_writer = ResultWriter(self.name, 'target')
+        source_records = self.source_connection.execute_query(self.source_query, source_writer.write, self.sort_source)
+        target_records = self.target_connection.execute_query(self.target_query, target_writer.write, self.sort_target)
 
         source_mismatch, target_mismatch = comparator.compare(source_records, target_records,
                                                               max_mismatch_size=self.max_mismatch_size)
         test_result = TestResult(self.name, self.source_query, self.target_query, source_mismatch,
                                  target_mismatch)
+
+        source_writer.close()
+        target_writer.close()
+        logger.info('Executed Test Case {}'.format(self.name))
         return test_result
-
-    def create_on_fetch(self, file: str):
-
-        def on_fetch(data: tuple):
-            source_file_name = r'{}\{}'.format(self.name, file)
-
-            import os
-            os.makedirs(self.name, exist_ok=True)
-            source_file = open(source_file_name, 'a')
-            source_file.write(str(data))
-
-        return on_fetch
 
 
 class TestResult(object):
@@ -109,3 +108,31 @@ class TestResult(object):
             self.status = 'Pass'
         else:
             self.status = 'Fail'
+
+    def save_results(self):
+        source_mismatch_writer = ResultWriter(self.test_case_name, 'source_mismatch')
+        for data in self.source_mismatch:
+            source_mismatch_writer.write(data)
+        source_mismatch_writer.close()
+
+        target_mismatch_writer = ResultWriter(self.test_case_name, 'target_mismatch')
+        for data in self.target_mismatch:
+            target_mismatch_writer.write(data)
+        target_mismatch_writer.close()
+
+
+class ResultWriter:
+    def __init__(self, name: str, file):
+        self.name = name
+        self.results_folder = r'results/{}'.format(self.name)
+        os.makedirs(self.results_folder, exist_ok=True)
+
+        self.file_name = r'{0}\{1}.csv'.format(self.results_folder, file)
+        self.result_file = open(self.file_name, mode='w', newline='')
+        self.writer = csv.writer(self.result_file)
+
+    def write(self, data):
+        self.writer.writerow(data)
+
+    def close(self):
+        self.result_file.close()
