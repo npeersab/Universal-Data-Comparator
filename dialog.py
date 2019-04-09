@@ -655,8 +655,9 @@ class OdbcDsnDialog(QWidget):
         user_details = UserDetails(username, password)
         
         self.connection = OdbcDsnConnection(connection_name, dsn, trusted_connection)
+        self.connection.user_details = user_details
         try:
-            self.connection.connect(user_details)
+            self.connection.connect()
         except OperationalError as e:
             self.save_button.setEnabled(False)
             message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Data Source {}'.format(dsn),
@@ -836,8 +837,9 @@ class OdbcDialog(QWidget):
         user_details = UserDetails(username, password)
         
         self.connection = OdbcConnection(connection_name, driver, server, port, database, trusted_connection)
+        self.connection.user_details = user_details
         try:
-            self.connection.connect(user_details)
+            self.connection.connect()
         except OperationalError as e:
             self.save_button.setEnabled(False)
             message = ErrorMessageBox(self, 'Connection Failed', 'Connection Failed for Server {}'.format(server),
