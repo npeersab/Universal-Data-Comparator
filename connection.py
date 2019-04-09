@@ -13,6 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import abc
 import pyodbc
 
 
@@ -33,6 +34,7 @@ class Connection(object):
         self.user_details = None
 
     def execute_query(self, query: str, on_fetch, sort: bool = False):
+        self.connect()
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
@@ -50,6 +52,14 @@ class Connection(object):
                 yield DataRow(row)
 
         return result_generator()
+
+    @abc.abstractmethod
+    def connect(self):
+        pass
+
+    def close_connection(self):
+        self.connection = None
+        self.cursor = None
 
 
 class UserDetails(object):
