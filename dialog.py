@@ -12,11 +12,12 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import pickle
 
 import pyodbc
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QWidget, QAction
+from PyQt5.QtWidgets import QWidget, QAction, QFileDialog
 from pyodbc import OperationalError
 
 from connection import OdbcDsnConnection, UserDetails, OdbcConnection
@@ -87,11 +88,23 @@ class WelcomeDialog(QWidget):
         self.open_button.setShortcut(_translate("welcome_dialog", "Ctrl+O"))
 
     def setup_signals(self):
-        self.create_button.clicked.connect(self.on_create)
+        self.create_button.clicked.connect(self.on_create_clicked)
+        self.open_button.clicked.connect(self.on_open_clicked)
 
-    def on_create(self):
+    def on_create_clicked(self):
         create_project_dialog = CreateProjectDialog(self)
         create_project_dialog.show()
+
+    def on_open_clicked(self):
+        options = QFileDialog.Options()
+        filename, _ = QFileDialog.getOpenFileName(self, 'Select Project File', '', 'Test Project Files (*.tpr)',
+                                                  options=options)
+        if filename:
+            with open(filename, 'rb') as project_file:
+                test_project = pickle.load(project_file, fix_imports=True)
+
+            self.start_main(test_project)
+            self.close()
 
     def create_project(self, project):
         self.start_main(project)
