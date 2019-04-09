@@ -188,10 +188,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.test_project_tree.headerItem().setText(0, self.project.name)
 
         for test_case in self.project.test_cases:
-            self.add_test_case(test_case)
+            test_case_item = TreeWidgetItem(name=test_case.name, value=test_case)
+            self.test_cases_item.addChild(test_case_item)
 
         for connection in self.project.connections:
-            self.add_connection(connection)
+            connection_item = TreeWidgetItem(name=connection.name, value=connection)
+            self.connections_item.addChild(connection_item)
 
         self.test_project_tree.addTopLevelItems((self.test_cases_item, self.connections_item))
 
