@@ -12,6 +12,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import pickle
 
 from PyQt5.QtWidgets import QMenu, QAction
 from PyQt5 import QtCore, QtWidgets
@@ -178,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.new_test_project_action.triggered.connect(self.on_new_test_project)
         self.new_connection_action.triggered.connect(self.on_new_connection)
         self.new_test_case_action.triggered.connect(self.on_new_test_case)
+        self.save_action.triggered.connect(self.on_save_triggered)
         self.exit_action.triggered.connect(self.on_exit)
 
         self.test_project_tree.customContextMenuRequested.connect(self.on_tree_right_click)
@@ -225,7 +227,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_exit():
         exit(0)
 
-    def on_save(self):
+    def on_save_triggered(self):
+        with open('{}.tpr'.format(self.project.name), 'wb') as out:
+            for connection in self.project.connections:
+                connection.close_connection()
+            pickle.dump(self.project, out, fix_imports=True, protocol=pickle.HIGHEST_PROTOCOL)
         pass
 
     def on_save_as(self):
