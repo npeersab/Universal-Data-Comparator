@@ -30,6 +30,7 @@ class Connection(object):
         self.connection = None
         self.cursor = None
         self.trusted_connection = trusted_connection
+        self.user_details = None
 
     def execute_query(self, query: str, on_fetch, sort: bool = False):
         self.cursor = self.connection.cursor()
@@ -73,9 +74,9 @@ class OdbcDsnConnection(Connection):
 
         self.dsn = dsn
 
-    def connect(self, user_details: UserDetails):
+    def connect(self):
         conn_str = 'DSN={};UID={};PWD={};'
-        conn_str = conn_str.format(self.dsn, user_details.username, user_details.password)
+        conn_str = conn_str.format(self.dsn, self.user_details.username, self.user_details.password)
         if self.trusted_connection:
             conn_str += 'Trusted_Connection=yes'
 
@@ -90,10 +91,10 @@ class OdbcConnection(Connection):
         self.server = server + ',{}'.format(port) if port else ''
         self.database = database
 
-    def connect(self, user_details: UserDetails):
+    def connect(self):
         conn_str = 'DRIVER={{{}}};SERVER={};DATABASE={};UID={};PWD={}'
-        conn_str = conn_str.format(self.driver, self.server, self.database, user_details.username,
-                                   user_details.password)
+        conn_str = conn_str.format(self.driver, self.server, self.database, self.user_details.username,
+                                   self.user_details.password)
         if self.trusted_connection:
             conn_str += 'Trusted_Connection=yes'
 
