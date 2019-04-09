@@ -100,25 +100,6 @@ class OdbcConnection(Connection):
         self.connection = pyodbc.connect(conn_str)
 
 
-def replace_null(row: tuple) -> tuple:
-    """
-    Replace all None values in the tuple with __NULL__
-
-    :param row:
-    :return row with replaced None values:
-    """
-    row = list(row)
-    try:
-        while True:
-            index = row.index(None)
-            row.pop(index)
-            row.insert(index, '__NULL__')
-    except ValueError:
-        pass
-
-    return tuple(row)
-
-
 class DataRow:
     def __init__(self, data):
         self.data = tuple(data)
