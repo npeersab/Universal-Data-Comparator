@@ -128,7 +128,7 @@ class ResultWriter:
         os.makedirs(self.results_folder, exist_ok=True)
 
         self.file_name = r'{0}\{1}.csv'.format(self.results_folder, file)
-        self.result_file = open(self.file_name, mode='w', newline='')
+        self.result_file = open(self.file_name, mode='w', newline='', encoding='utf-8')
         self.writer = csv.writer(self.result_file)
 
     def write(self, data):
