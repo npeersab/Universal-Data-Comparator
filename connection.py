@@ -133,6 +133,7 @@ class DataRow:
                     return True
                 else:
                     continue
+        return False
 
     def __le__(self, other):
         for value1, value2 in zip(self.data, other.data):
@@ -149,6 +150,7 @@ class DataRow:
                     return True
                 else:
                     continue
+        return True
 
     def __gt__(self, other):
         for value1, value2 in zip(self.data, other.data):
@@ -165,6 +167,7 @@ class DataRow:
                     return False
                 else:
                     continue
+        return False
 
     def __ge__(self, other):
         for value1, value2 in zip(self.data, other.data):
@@ -181,6 +184,7 @@ class DataRow:
                     return False
                 else:
                     continue
+        return True
 
     def __iter__(self):
         return self.data.__iter__()
