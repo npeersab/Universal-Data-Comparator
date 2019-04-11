@@ -70,6 +70,9 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
                         len(target_mismatch_records) >= max_mismatch_size:
                     return source_mismatch_records, target_mismatch_records
 
+            if not fetch_source and not fetch_target and source_found and target_found:
+                fetch_source = fetch_target = True
+
     return source_mismatch_records, target_mismatch_records
 
 
