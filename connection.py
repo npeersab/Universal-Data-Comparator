@@ -118,6 +118,9 @@ class DataRow:
     def __eq__(self, other):
         return self.data == other.data
 
+    def __ne__(self, other):
+        return self.data != other.data
+
     def __lt__(self, other):
         for value1, value2 in zip(self.data, other.data):
             if value1:
