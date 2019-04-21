@@ -14,6 +14,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import abc
+from typing import Callable
+
 import pyodbc
 
 
@@ -22,7 +24,7 @@ class Connection(object):
     Connection to the database
     """
 
-    def __init__(self, name: str, trusted_connection: bool) -> None:
+    def __init__(self, name: str, trusted_connection: bool):
         """
         constructor to create new Connection
         """
@@ -33,15 +35,19 @@ class Connection(object):
         self.trusted_connection = trusted_connection
         self.user_details = None
 
-    def execute_query(self, query: str, on_fetch, sort: bool = False):
+    def execute_query(self, query: str, on_fetch: Callable, sort: bool = False):
+        """
+        Execute the query on the connection and return the result generator
+
+        :param query: The query which has to be executed
+        :param on_fetch: The method which has to be executed if record is fetched
+        :param sort: To sort the data
+        """
+
         self.connect()
         self.cursor = self.connection.cursor()
         self.cursor.execute(query)
 
-        """
-        Create a generator to fetch rows from database
-        if data is sorted program will require more memory space to execute
-        """
         data = self.cursor
         if sort:
             data = sorted(data.fetchall())
