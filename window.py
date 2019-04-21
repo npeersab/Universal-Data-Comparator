@@ -222,8 +222,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_execute_triggered(self):
         items = self.test_project_tree.selectedItems()
         for item in items:
-            test_result = item.value.execute()
-            test_result.save_results()
+            if isinstance(item.value, TestCase):
+                test_result = item.value.execute()
+                test_result.save_results()
 
     @staticmethod
     def on_exit():
