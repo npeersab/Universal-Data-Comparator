@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>odbc_dialog</class>
  <widget class="QWidget" name="odbc_dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -31,13 +34,26 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QFormLayout" name="form_frame_layout">
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="connection_name_label">
+           <property name="text">
+            <string>Connection Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="connection_name_line_edit"/>
+         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="driver_label">
            <property name="text">
             <string>Driver:</string>
            </property>
           </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="driver_combo_box"/>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="server_label">
@@ -69,6 +85,13 @@
          <item row="4" column="1">
           <widget class="QLineEdit" name="database_line_edit"/>
          </item>
+         <item row="5" column="1">
+          <widget class="QCheckBox" name="windows_auth_check_box">
+           <property name="text">
+            <string>Use Windows authentication</string>
+           </property>
+          </widget>
+         </item>
          <item row="6" column="0">
           <widget class="QLabel" name="username_label">
            <property name="text">
@@ -90,26 +113,6 @@
           <widget class="QLineEdit" name="password_line_edit">
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="driver_combo_box"/>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="connection_name_line_edit"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="connection_name_label">
-           <property name="text">
-            <string>Connection Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QCheckBox" name="windows_auth_check_box">
-           <property name="text">
-            <string>Use Windows authentication</string>
            </property>
           </widget>
          </item>

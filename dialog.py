@@ -705,6 +705,7 @@ class OdbcDialog(QWidget):
         ###########################################
 
         self.setObjectName("odbc_dialog")
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(420, 329)
         self.odbc_dialog_layout = QtWidgets.QVBoxLayout(self)
         self.odbc_dialog_layout.setObjectName("odbc_dialog_layout")
