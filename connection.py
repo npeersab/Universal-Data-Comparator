@@ -14,7 +14,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import abc
-from typing import Callable
+from typing import Callable, Generator
 
 import pyodbc
 
@@ -35,10 +35,11 @@ class Connection(object):
         self.trusted_connection = trusted_connection
         self.user_details = None
 
-    def execute_query(self, query: str, on_fetch: Callable, sort: bool = False):
+    def execute_query(self, query: str, on_fetch: Callable, sort: bool = False) -> Generator:
         """
         Execute the query on the connection and return the result generator
 
+        :return: Generator for Data Rows
         :param query: The query which has to be executed
         :param on_fetch: The method which has to be executed if record is fetched
         :param sort: To sort the data
