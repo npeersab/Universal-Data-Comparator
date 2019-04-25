@@ -337,7 +337,7 @@ class CreateProjectDialog(QWidget):
         self.close()
 
 
-class CreateTestCaseDialog(QWidget):
+class TestCaseDialog(QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent, flags=QtCore.Qt.Window)
 

@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QMenu, QAction
 from PyQt5 import QtCore, QtWidgets
 
 from connection import Connection
-from dialog import ConnectionTypeDialog, CreateTestCaseDialog
+from dialog import ConnectionTypeDialog, TestCaseDialog
 from qt_items import TreeWidgetItem
 from test import TestProject, TestCase
 
@@ -205,7 +205,7 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog.show()
 
     def on_new_test_case(self):
-        create_test_case_dialog = CreateTestCaseDialog(self)
+        create_test_case_dialog = TestCaseDialog(self)
         create_test_case_dialog.show()
 
     def on_tree_right_click(self, position):
