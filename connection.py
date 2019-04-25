@@ -123,9 +123,13 @@ class DataRow:
         self.data = tuple(data)
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.data == other.data
 
     def __ne__(self, other):
+        if other is None:
+            return True
         return self.data != other.data
 
     def __lt__(self, other):
