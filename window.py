@@ -205,8 +205,8 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog.show()
 
     def on_new_test_case(self):
-        create_test_case_dialog = TestCaseDialog(self)
-        create_test_case_dialog.show()
+        test_case_dialog = TestCaseDialog(self)
+        test_case_dialog.show()
 
     def on_tree_right_click(self, position):
         menu = QMenu()
@@ -214,6 +214,10 @@ class MainWindow(QtWidgets.QMainWindow):
         action = QAction('Execute')
         action.triggered.connect(self.on_execute_triggered)
         menu.addAction(new_menu.menuAction())
+        menu.addAction(action)
+        edit_action = QAction('Edit')
+        edit_action.triggered.connect(self.on_edit_triggered)
+        menu.addAction(edit_action)
         menu.addAction(action)
         new_menu.addAction(self.new_test_case_action)
         new_menu.addAction(self.new_connection_action)
@@ -225,6 +229,13 @@ class MainWindow(QtWidgets.QMainWindow):
             if isinstance(item.value, TestCase):
                 test_result = item.value.execute()
                 test_result.save_results()
+
+    def on_edit_triggered(self):
+        item = self.test_project_tree.selectedItems()[0]
+
+        if isinstance(item.value, TestCase):
+            test_case_dialog = TestCaseDialog(self, item.value)
+            test_case_dialog.show()
 
     @staticmethod
     def on_exit():

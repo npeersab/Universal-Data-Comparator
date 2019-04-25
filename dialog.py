@@ -338,8 +338,11 @@ class CreateProjectDialog(QWidget):
 
 
 class TestCaseDialog(QWidget):
-    def __init__(self, parent):
+    test_case: TestCase
+
+    def __init__(self, parent, test_case=None):
         super().__init__(parent=parent, flags=QtCore.Qt.Window)
+        self.test_case = test_case
 
         ##########################################
         # Auto generated UI code starts from here #
@@ -483,6 +486,9 @@ class TestCaseDialog(QWidget):
         self.load_connections()
         self.setup_signals()
 
+        if self.test_case is not None:
+            self.load_test_case()
+
     def re_translate_ui(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("create_test_case_dialog", "Create New Test Case"))
@@ -514,6 +520,17 @@ class TestCaseDialog(QWidget):
         self.save_button.clicked.connect(self.on_save_button_clicked)
         self.cancel_button.clicked.connect(self.on_cancel_button_clicked)
 
+    def load_test_case(self):
+        self.test_case_name_line_edit.setText(self.test_case.name)
+
+        # TODO update the connection here
+
+        self.source_query_text_edit.setPlainText(self.test_case.source_query)
+        self.source_sort_check_box.setEnabled(self.test_case.sort_source)
+        self.target_query_text_edit.setPlainText(self.test_case.target_query)
+        self.target_sort_check_box.setEnabled(self.test_case.sort_target)
+        self.max_mismatch_size_line_edit.setText(str(self.test_case.max_mismatch_size))
+
     def on_save_button_clicked(self):
         test_case_name = self.test_case_name_line_edit.text()
         source_connection = self.source_connection_combo_box.currentData()
@@ -524,10 +541,22 @@ class TestCaseDialog(QWidget):
         sort_target = self.target_sort_check_box.isChecked()
         max_mismatch_size = int(self.max_mismatch_size_line_edit.text())
 
-        test_case = TestCase(name=test_case_name, source_connection=source_connection, source_query=source_query,
-                             sort_source=sort_source, target_connection=target_connection, target_query=target_query,
-                             sort_target=sort_target, max_mismatch_size=max_mismatch_size)
-        self.parent().add_test_case(test_case)
+        if self.test_case is not None:
+            self.test_case.name = test_case_name
+            self.test_case.source_connection = source_connection
+            self.test_case.source_query = source_query
+            self.test_case.sort_source = sort_source
+            self.test_case.target_connection = target_connection
+            self.test_case.target_query = target_query
+            self.test_case.sort_target = sort_target
+            self.test_case.max_mismatch_size = max_mismatch_size
+        else:
+            self.test_case = TestCase(name=test_case_name, source_connection=source_connection,
+                                      source_query=source_query, sort_source=sort_source,
+                                      target_connection=target_connection, target_query=target_query,
+                                      sort_target=sort_target, max_mismatch_size=max_mismatch_size)
+            self.parent().add_test_case(self.test_case)
+
         self.close()
 
     def on_cancel_button_clicked(self):
@@ -659,14 +688,14 @@ class OdbcDsnDialog(QWidget):
         connection_name = self.connection_name_line_edit.text()
         dsn = self.dsn_combo_box.currentText()
         trusted_connection = self.windows_auth_check_box.isChecked()
-        
+
         username = ''
         password = ''
         if not trusted_connection:
             username = self.username_line_edit.text()
             password = self.password_line_edit.text()
         user_details = UserDetails(username, password)
-        
+
         self.connection = OdbcDsnConnection(connection_name, dsn, trusted_connection)
         self.connection.user_details = user_details
         try:
@@ -842,14 +871,14 @@ class OdbcDialog(QWidget):
         port = self.port_line_edit.text()
         database = self.database_line_edit.text()
         trusted_connection = self.windows_auth_check_box.isChecked()
-        
+
         username = ''
         password = ''
         if not trusted_connection:
             username = self.username_line_edit.text()
             password = self.password_line_edit.text()
         user_details = UserDetails(username, password)
-        
+
         self.connection = OdbcConnection(connection_name, driver, server, port, database, trusted_connection)
         self.connection.user_details = user_details
         try:
