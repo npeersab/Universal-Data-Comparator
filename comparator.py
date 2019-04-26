@@ -22,116 +22,49 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
     fetch_source = fetch_target = True
     source_record = target_record = None
     source_found = target_found = False
-    prev = None
-    while True:
-        try:
-            if fetch_target:
-                target_record = target_records.__next__()
-                target_found = False
-        except StopIteration:
-            if not source_found:
-                if source_record != target_record:
-                    source_mismatch_records.insert(source_record)
-            check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
-            break
-
-        try:
-            if fetch_source:
-                source_record = source_records.__next__()
-                if source_record == prev:
-                    print('dup')
-                prev = source_record
-                source_found = False
-        except StopIteration:
-            if not target_found:
-                if source_record != target_record:
-                    target_mismatch_records.insert(target_record)
-            check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
-            break
-
-        if source_record == target_record:
-            fetch_source = fetch_target = True
-
-        else:
-            if target_mismatch_records.remove(source_record):
-                fetch_target = False
-                source_found = True
-            else:
-                source_found = False
-
-            if source_mismatch_records.remove(target_record):
-                fetch_source = False
-                target_found = True
-            else:
-                target_found = False
-
-            if not source_found and not target_found:
-                source_mismatch_records.insert(source_record)
-                target_mismatch_records.insert(target_record)
-                fetch_source = fetch_target = True
-
-                if len(source_mismatch_records) >= max_mismatch_size or \
-                        len(target_mismatch_records) >= max_mismatch_size:
-                    return source_mismatch_records, target_mismatch_records
-
-            if not fetch_source and not fetch_target and source_found and target_found:
-                fetch_source = fetch_target = True
-
-    '''source_mismatch_records = SortedList()
-    target_mismatch_records = SortedList()
-    fetch_source = fetch_target = True
-    source_record = target_record = None
-    source_found = target_found = False
 
     while True:
-        try:
-            if fetch_target:
-                target_record = target_records.__next__()
-                target_found = False
-        except StopIteration:
-            if not source_found:
-                if source_record != target_record:
-                    source_mismatch_records.insert(source_record)
-            check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
-            break
-
-        try:
-            if fetch_source:
+        if fetch_source:
+            try:
                 source_record = source_records.__next__()
                 source_found = False
-        except StopIteration:
-            if not target_found:
-                if source_record != target_record:
-                    target_mismatch_records.insert(target_record)
-            check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
-            break
-        
-        if source_record == target_record:
-            fetch_source = fetch_target = True
-        
-        else:
-            if target_mismatch_records.remove(source_record):
-                fetch_target = False
-                source_found = True
-            else:
-                source_found = False
+            except StopIteration:
+                if not target_found:
+                    if not source_mismatch_records.remove(target_record):
+                        target_mismatch_records.insert(target_record)
+                check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
+                break
 
-            if source_mismatch_records.remove(target_record):
-                fetch_source = False
-                target_found = True
-            else:
+        if fetch_target:
+            try:
+                target_record = target_records.__next__()
                 target_found = False
+            except StopIteration:
+                if not source_found:
+                    if not target_mismatch_records.remove(source_record):
+                        source_mismatch_records.insert(source_record)
+                check_remaining(source_records, source_mismatch_records, target_records, target_mismatch_records)
+                break
 
-            if not source_found and not target_found:
+        if source_record == target_record:
+            source_found = target_found = fetch_source = fetch_target = True
+
+        else:
+            source_found = target_mismatch_records.remove(source_record)
+            target_found = source_mismatch_records.remove(target_record)
+
+            fetch_source = source_found
+            fetch_target = target_found
+
+            if not fetch_source and not fetch_target:
+                fetch_source = fetch_target = True
+
                 source_mismatch_records.insert(source_record)
                 target_mismatch_records.insert(target_record)
 
-                if len(source_mismatch_records) >= max_mismatch_size or \
-                        len(target_mismatch_records) >= max_mismatch_size:
-                    return source_mismatch_records, target_mismatch_records
-
-            if not fetch_source and not fetch_target and source_found and target_found:
-                fetch_source = fetch_target = True'''
+            if len(source_mismatch_records) >= max_mismatch_size or \
+                    len(target_mismatch_records) >= max_mismatch_size:
+                return source_mismatch_records, target_mismatch_records
 
     return source_mismatch_records, target_mismatch_records
 
