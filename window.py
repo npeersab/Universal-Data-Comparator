@@ -12,7 +12,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import pickle
+from sys import exit
 
 from PyQt5.QtWidgets import QMenu, QAction
 from PyQt5 import QtCore, QtWidgets
@@ -146,6 +148,124 @@ class MainWindow(QtWidgets.QMainWindow):
         self.re_translate_ui()
         self.load_project()
 
+    def add_connection(self, connection: Connection):
+        """
+        Add connection to Test Project and Test Project Tree
+
+        :param connection: Connection which has to be added in Test Project
+        """
+
+        # Add the Connection to Test Project
+        self.project.add_connection(connection)
+
+        # Create TreeWidgetItem for Connection and add to Test Project Tree
+        connection_item = TreeWidgetItem(name=connection.name, value=connection)
+        self.connections_item.addChild(connection_item)
+
+    def add_test_case(self, test_case: TestCase):
+        """
+        Add Test Case to Test Project and Test Project Tree
+
+        :param test_case: TestCase which has to be added in Test Project
+        """
+
+        # Add the Test Case to Test Project
+        self.project.add_test_case(test_case)
+
+        # Create TreeWidgetItem for Test Case and add to Test Project Tree
+        test_case_item = TreeWidgetItem(name=test_case.name, value=test_case)
+        self.test_cases_item.addChild(test_case_item)
+
+    def load_project(self):
+        """
+        Load all Test Cases and Connection from Test Project into Test Project Tree
+        """
+
+        # Set Project name to Tree Header
+        self.test_project_tree.headerItem().setText(0, self.project.name)
+
+        # Add all Test Cases to the Test Cases Item
+        for test_case in self.project.test_cases:
+            test_case_item = TreeWidgetItem(name=test_case.name, value=test_case)
+            self.test_cases_item.addChild(test_case_item)
+
+        # Add all Connections to the Connections Item
+        for connection in self.project.connections:
+            connection_item = TreeWidgetItem(name=connection.name, value=connection)
+            self.connections_item.addChild(connection_item)
+
+        # Add Test Cases and Connections item to Test Project Tree
+        self.test_project_tree.addTopLevelItems((self.test_cases_item, self.connections_item))
+
+    def delete_tree_items(self, *items: TreeWidgetItem):
+        """
+        Delete the Tree Widget items from The Test Project Tree
+
+        :param items: TreeWidgetItem which has to be deleted
+        :return:
+        """
+
+        root = self.test_project_tree.invisibleRootItem()
+        for item in items:
+            (item.parent() or root).removeChild(item)
+
+    def on_edit_triggered(self):
+        """
+        On clicking edit menu action
+        """
+        item = self.test_project_tree.selectedItems()[0]
+
+        if isinstance(item.value, TestCase):
+            test_case_dialog = TestCaseDialog(self, item.value)
+            test_case_dialog.show()
+
+    def on_execute_triggered(self):
+        items = self.test_project_tree.selectedItems()
+        for item in items:
+            if isinstance(item.value, TestCase):
+                test_result = item.value.execute()
+                test_result.save_results()
+
+    @staticmethod
+    def on_exit():
+        exit()
+
+    def on_new_connection(self):
+        dialog = ConnectionTypeDialog(self)
+        dialog.show()
+
+    def on_new_test_case(self):
+        test_case_dialog = TestCaseDialog(self)
+        test_case_dialog.show()
+
+    def on_new_test_project(self):
+        pass
+
+    def on_save_as_triggered(self):
+        pass
+
+    def on_save_triggered(self):
+        with open('{}.tpr'.format(self.project.name), 'wb') as out:
+            for connection in self.project.connections:
+                connection.close_connection()
+            pickle.dump(self.project, out, fix_imports=True, protocol=pickle.HIGHEST_PROTOCOL)
+        pass
+
+    def on_tree_right_click(self, position):
+        menu = QMenu()
+        new_menu = QMenu('New')
+        action = QAction('Execute')
+        action.triggered.connect(self.on_execute_triggered)
+        menu.addAction(new_menu.menuAction())
+        menu.addAction(action)
+        edit_action = QAction('Edit')
+        edit_action.triggered.connect(self.on_edit_triggered)
+        menu.addAction(edit_action)
+        menu.addAction(action)
+        new_menu.addAction(self.new_test_case_action)
+        new_menu.addAction(self.new_connection_action)
+        menu.exec_(self.test_project_tree.viewport().mapToGlobal(position))
+
     def re_translate_ui(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("main_window", "MainWindow"))
@@ -176,95 +296,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.exit_action.setShortcut(_translate("main_window", "Ctrl+Q"))
 
     def setup_signals(self):
-        self.new_test_project_action.triggered.connect(self.on_new_test_project)
+        """
+        Connect the signals to slots
+        """
+
+        self.exit_action.triggered.connect(self.on_exit)
         self.new_connection_action.triggered.connect(self.on_new_connection)
         self.new_test_case_action.triggered.connect(self.on_new_test_case)
+        self.new_test_project_action.triggered.connect(self.on_new_test_project)
         self.save_action.triggered.connect(self.on_save_triggered)
-        self.exit_action.triggered.connect(self.on_exit)
-
         self.test_project_tree.customContextMenuRequested.connect(self.on_tree_right_click)
-
-    def load_project(self):
-        self.test_project_tree.headerItem().setText(0, self.project.name)
-
-        for test_case in self.project.test_cases:
-            test_case_item = TreeWidgetItem(name=test_case.name, value=test_case)
-            self.test_cases_item.addChild(test_case_item)
-
-        for connection in self.project.connections:
-            connection_item = TreeWidgetItem(name=connection.name, value=connection)
-            self.connections_item.addChild(connection_item)
-
-        self.test_project_tree.addTopLevelItems((self.test_cases_item, self.connections_item))
-
-    def on_new_test_project(self):
-        pass
-
-    def on_new_connection(self):
-        dialog = ConnectionTypeDialog(self)
-        dialog.show()
-
-    def on_new_test_case(self):
-        test_case_dialog = TestCaseDialog(self)
-        test_case_dialog.show()
-
-    def on_tree_right_click(self, position):
-        menu = QMenu()
-        new_menu = QMenu('New')
-        action = QAction('Execute')
-        action.triggered.connect(self.on_execute_triggered)
-        menu.addAction(new_menu.menuAction())
-        menu.addAction(action)
-        edit_action = QAction('Edit')
-        edit_action.triggered.connect(self.on_edit_triggered)
-        menu.addAction(edit_action)
-        menu.addAction(action)
-        new_menu.addAction(self.new_test_case_action)
-        new_menu.addAction(self.new_connection_action)
-        menu.exec_(self.test_project_tree.viewport().mapToGlobal(position))
-
-    def on_execute_triggered(self):
-        items = self.test_project_tree.selectedItems()
-        for item in items:
-            if isinstance(item.value, TestCase):
-                test_result = item.value.execute()
-                test_result.save_results()
-
-    def on_edit_triggered(self):
-        item = self.test_project_tree.selectedItems()[0]
-
-        if isinstance(item.value, TestCase):
-            test_case_dialog = TestCaseDialog(self, item.value)
-            test_case_dialog.show()
-
-    @staticmethod
-    def on_exit():
-        exit(0)
-
-    def on_save_triggered(self):
-        with open('{}.tpr'.format(self.project.name), 'wb') as out:
-            for connection in self.project.connections:
-                connection.close_connection()
-            pickle.dump(self.project, out, fix_imports=True, protocol=pickle.HIGHEST_PROTOCOL)
-        pass
-
-    def on_save_as(self):
-        pass
-
-    def delete_tree_items(self, *items: TreeWidgetItem):
-        root = self.test_project_tree.invisibleRootItem()
-        for item in items:
-            (item.parent() or root).removeChild(item)
-
-    def odbc(self):
-        pass
-
-    def add_test_case(self, test_case: TestCase):
-        self.project.add_test_case(test_case)
-        test_case_item = TreeWidgetItem(name=test_case.name, value=test_case)
-        self.test_cases_item.addChild(test_case_item)
-
-    def add_connection(self, connection: Connection):
-        self.project.add_connection(connection)
-        connection_item = TreeWidgetItem(name=connection.name, value=connection)
-        self.connections_item.addChild(connection_item)

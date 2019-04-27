@@ -53,12 +53,15 @@ def config_logger():
 
 
 if __name__ == '__main__':
+    main_window = None
+
     config_logger()
 
+    # Create Welcome dialog
     logger.info('Starting Application...')
     app = QtWidgets.QApplication(sys.argv)
-    main_window = None
     welcome_dialog = WelcomeDialog(start_main)
     welcome_dialog.show()
     logger.info('Application Started')
+
     sys.exit(app.exec_())
