@@ -318,5 +318,5 @@ class MainWindow(QtWidgets.QMainWindow):
         self.new_connection_action.triggered.connect(self.on_new_connection_triggered)
         self.new_test_case_action.triggered.connect(self.on_new_test_case_triggered)
         self.new_test_project_action.triggered.connect(self.on_new_test_project_triggered)
-        self.save_action.triggered.connect(self.on_save_triggered_triggered)
+        self.save_action.triggered.connect(self.on_save_triggered)
         self.test_project_tree.customContextMenuRequested.connect(self.on_tree_right_click)
