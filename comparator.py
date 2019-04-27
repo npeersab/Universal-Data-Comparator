@@ -50,11 +50,8 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
             source_found = target_found = fetch_source = fetch_target = True
 
         else:
-            source_found = target_mismatch_records.remove(source_record)
-            target_found = source_mismatch_records.remove(target_record)
-
-            fetch_source = source_found
-            fetch_target = target_found
+            fetch_source = source_found = target_mismatch_records.remove(source_record)
+            fetch_target = target_found = source_mismatch_records.remove(target_record)
 
             if not fetch_source and not fetch_target:
                 fetch_source = fetch_target = True
