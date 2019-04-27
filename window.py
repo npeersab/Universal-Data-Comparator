@@ -220,6 +220,10 @@ class MainWindow(QtWidgets.QMainWindow):
             test_case_dialog.show()
 
     def on_execute_triggered(self):
+        """
+        On clicking edit menu action
+        """
+
         items = self.test_project_tree.selectedItems()
         for item in items:
             if isinstance(item.value, TestCase):
