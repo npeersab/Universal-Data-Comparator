@@ -257,17 +257,26 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_tree_right_click(self, position):
         menu = QMenu()
+        selected_items = self.test_project_tree.selectedItems()
+
         new_menu = QMenu('New')
-        action = QAction('Execute')
-        action.triggered.connect(self.on_execute_triggered)
-        menu.addAction(new_menu.menuAction())
-        menu.addAction(action)
-        edit_action = QAction('Edit')
-        edit_action.triggered.connect(self.on_edit_triggered)
-        menu.addAction(edit_action)
-        menu.addAction(action)
         new_menu.addAction(self.new_test_case_action)
         new_menu.addAction(self.new_connection_action)
+        menu.addAction(new_menu.menuAction())
+
+        for item in selected_items:
+            if not isinstance(item.value, TestCase):
+                break
+        else:
+            execute_action = QAction('Execute')
+            execute_action.triggered.connect(self.on_execute_triggered)
+            menu.addAction(execute_action)
+
+        if len(selected_items) == 1:
+            edit_action = QAction('Edit')
+            edit_action.triggered.connect(self.on_edit_triggered)
+            menu.addAction(edit_action)
+
         menu.exec_(self.test_project_tree.viewport().mapToGlobal(position))
 
     def re_translate_ui(self):
