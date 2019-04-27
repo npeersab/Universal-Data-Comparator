@@ -140,7 +140,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Auto generated UI code ends here #
         ###################################
 
-        self.splitter.setSizes([100, 200])
+        self.splitter.setSizes([250, 600])
+        self.splitter.setStretchFactor(0, 0)
+        self.splitter.setStretchFactor(1, 1)
         self.test_cases_item = TreeWidgetItem(name='Test Cases', value=self.project.test_cases)
         self.connections_item = TreeWidgetItem(name='Connections', value=self.project.connections)
 
@@ -202,7 +204,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Delete the Tree Widget items from The Test Project Tree
 
         :param items: TreeWidgetItem which has to be deleted
-        :return:
         """
 
         root = self.test_project_tree.invisibleRootItem()
