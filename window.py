@@ -234,15 +234,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_exit():
         exit()
 
-    def on_new_connection(self):
+    def on_new_connection_triggered(self):
         dialog = ConnectionTypeDialog(self)
         dialog.show()
 
-    def on_new_test_case(self):
+    def on_new_test_case_triggered(self):
         test_case_dialog = TestCaseDialog(self)
         test_case_dialog.show()
 
-    def on_new_test_project(self):
+    def on_new_test_project_triggered(self):
         pass
 
     def on_save_as_triggered(self):
@@ -305,8 +305,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.exit_action.triggered.connect(self.on_exit)
-        self.new_connection_action.triggered.connect(self.on_new_connection)
-        self.new_test_case_action.triggered.connect(self.on_new_test_case)
-        self.new_test_project_action.triggered.connect(self.on_new_test_project)
-        self.save_action.triggered.connect(self.on_save_triggered)
+        self.new_connection_action.triggered.connect(self.on_new_connection_triggered)
+        self.new_test_case_action.triggered.connect(self.on_new_test_case_triggered)
+        self.new_test_project_action.triggered.connect(self.on_new_test_project_triggered)
+        self.save_action.triggered.connect(self.on_save_triggered_triggered)
         self.test_project_tree.customContextMenuRequested.connect(self.on_tree_right_click)
