@@ -26,7 +26,7 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
     while True:
         if fetch_source:
             try:
-                source_record = source_records.__next__()
+                source_record = next(source_records)
                 source_found = False
             except StopIteration:
                 if not target_found:
@@ -37,7 +37,7 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
 
         if fetch_target:
             try:
-                target_record = target_records.__next__()
+                target_record = next(target_records)
                 target_found = False
             except StopIteration:
                 if not source_found:
