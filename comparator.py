@@ -59,8 +59,8 @@ def compare(source_records: iter, target_records: iter, *, max_mismatch_size):
                 source_mismatch_records.insert(source_record)
                 target_mismatch_records.insert(target_record)
 
-            if len(source_mismatch_records) >= max_mismatch_size or \
-                    len(target_mismatch_records) >= max_mismatch_size:
+            if (len(source_mismatch_records) >= max_mismatch_size or
+                    len(target_mismatch_records) >= max_mismatch_size):
                 return source_mismatch_records, target_mismatch_records
 
     return source_mismatch_records, target_mismatch_records
